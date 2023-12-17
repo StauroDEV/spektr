@@ -47,6 +47,11 @@ const handleArgParsing = (
   }
 }
 
+const hasOptions = (args: string[]) =>
+  args.find((arg) =>
+    (arg.startsWith(`--`) || arg.startsWith(`-`)) && arg !== '--' && arg !== '-'
+  )
+
 export class Clif {
   name?: string
   prefix = ''
@@ -62,46 +67,69 @@ export class Clif {
     this.#parseOptions = parseOptions
   }
   command(
-    { name = '', options = [] }: { name?: string; options?: Option[] },
-    action: Action,
+    nameOrAction: string | Action,
+    actionOrOptions: Action | { options: Option[] } = { options: [] },
+    params: { options: Option[] } = { options: [] },
   ) {
-    this.#commands.push({
-      name,
-      action,
-      path: `${this.prefix ? this.prefix + ' ' : ''}${name}`,
+    const options = 'options' in actionOrOptions
+      ? actionOrOptions.options
+      : params.options
+
+    const common = {
+      path: `${this.prefix ? this.prefix + ' ' : ''}${
+        typeof nameOrAction === 'string' ? nameOrAction : ''
+      }`,
       options,
-    })
+    }
+    if (typeof nameOrAction === 'string') {
+      if (typeof actionOrOptions !== 'function') {
+        throw new Error(`Command action for ${nameOrAction} is required`)
+      }
+      this.#commands.push({
+        name: nameOrAction,
+        action: actionOrOptions,
+        ...common,
+      })
+    } else {
+      this.#commands.push({
+        name: '',
+        action: nameOrAction,
+        ...common,
+      })
+    }
   }
   handle(args = Deno.args): void {
-    const fullPath = args.join(' ')
+    if (args.length === 0 && this.prefix === '') {
+      return console.log(this.#help())
+    }
 
-    if (fullPath === '' && this.prefix === '') return console.log(this.#help())
+    const commands = this.#commands.filter((command) => {
+      if (args.length === 0) return command.name === ''
+      else {
+        return command.path !== '' &&
+          args.join(' ').includes(command.path)
+      }
+    })
 
-    const commands = this.#commands.filter((command) =>
-      fullPath.startsWith(command.path) && args.includes(command.name)
-    )
-    const program = this.#programs.find((program) =>
-      fullPath.startsWith(program.prefix) && args.includes(program.prefix)
-    )
+    const program = this.#programs.find((program) => args[0] === program.prefix)
 
     if (program) {
-      return program.handle(args.slice(1))
+      return program.handle(args)
     } else if (commands) {
       // In case of multiple commands under the same, look for the one who has same options
-      const cmd =
-        commands.length > 1 && fullPath.includes('--') || fullPath.includes('-')
-          ? commands.find((c) =>
-            c.options.find((o) =>
-              args.find((arg) => arg.startsWith(`--${o.name}`)) ||
-              o.aliases.find((a) =>
-                args.find((arg) =>
-                  arg.slice(0, 2) === `-${a}` &&
-                  (arg[2] === '' || arg[2] === undefined)
-                )
+      const cmd = commands.length > 1 && hasOptions(args)
+        ? commands.find((c) =>
+          c.options.find((o) =>
+            args.find((arg) => arg.startsWith(`--${o.name}`)) ||
+            o.aliases.find((a) =>
+              args.find((arg) =>
+                arg.slice(0, 2) === `-${a}` &&
+                (arg[2] === '' || arg[2] === undefined)
               )
             )
           )
-          : commands.sort((x, y) => y.path.length - x.path.length)[0]
+        )
+        : commands.sort((x, y) => y.path.length - x.path.length)[0]
 
       if (!cmd) throw new Error('Command not found')
 
@@ -122,14 +150,14 @@ export class Clif {
     return this
   }
   version(version = '0.0.0', misc = `Deno: ${Deno.version.deno}`) {
-    this.command({
+    this.command(() => {
+      console.log(`${this.name}: ${version}\n${misc}`)
+    }, {
       options: [{
         name: 'version',
         aliases: ['v'],
         type: 'boolean',
       }],
-    }, () => {
-      console.log(`${this.name}: ${version}\n${misc}`)
     })
   }
   #help() {
@@ -147,22 +175,19 @@ export class Clif {
       this.#commands.filter((c) => c.name !== '').length ? `\n\nCommands:` : ''
     }\n`
 
-    const appendCommands = (commands: Command[], prefix = '') => {
+    const appendCommands = (commands: Command[]) => {
       commands.forEach((command) => {
-        if (command.name) helpMessage += `  ${prefix}${command.path}\n`
+        if (command.name) helpMessage += `  ${command.path}\n`
       })
     }
 
     appendCommands(this.#commands)
 
-    const appendPrograms = (programs: Clif[], prefix = '') => {
+    const appendPrograms = (programs: Clif[]) => {
       programs.forEach((program) => {
-        const programPrefix = `${prefix}${
-          program.prefix ? program.prefix + ' ' : ''
-        }`
-        helpMessage += `\nCommands for ${programPrefix.trimEnd()}:\n`
-        appendCommands(program.#commands, programPrefix)
-        appendPrograms(program.#programs, programPrefix)
+        helpMessage += `\nCommands for ${program.prefix}:\n`
+        appendCommands(program.#commands)
+        appendPrograms(program.#programs)
       })
     }
 
@@ -171,14 +196,14 @@ export class Clif {
     return helpMessage
   }
   help() {
-    this.command({
+    this.command(() => {
+      console.log(this.#help())
+    }, {
       options: [{
         name: 'help',
         aliases: ['h'],
         type: 'boolean',
       }],
-    }, () => {
-      console.log(this.#help())
     })
   }
 }

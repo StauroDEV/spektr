@@ -1,49 +1,34 @@
 import { Clif } from './clif.ts'
 
-const git = new Clif({ name: 'git' })
+const cli = new Clif()
 
-const remote = new Clif()
+const deploy = new Clif()
+cli.program('deploy', deploy)
 
-remote.command({
+deploy.command('start', (_, options) => {
+  console.log('Starting deployment...')
+  if (options.environment) {
+    console.log(`Deploying to environment: ${options.environment}`)
+  }
+}, {
   options: [
     {
-      name: 'tiger',
-      aliases: ['t', 'tgr'],
+      name: 'environment',
+      aliases: ['e'],
       type: 'string',
     },
   ],
-}, (_, options) => {
-  console.log(options)
 })
 
-remote.command({
-  name: 'add',
-}, () => {
-  console.log(`git remote add`)
+const auth = new Clif()
+cli.program('auth', auth)
+
+auth.command('login', () => {
+  console.log('Logging in...')
 })
 
-remote.command({
-  name: 'addd',
-}, () => {
-  console.log('here')
-})
+cli.version()
 
-remote.command({
-  options: [
-    {
-      name: 'bee',
-      aliases: ['b'],
-      type: 'string',
-    },
-  ],
-}, ([name], options) => {
-  console.log(name, options)
-})
+cli.help()
 
-git.program('remote', remote)
-
-git.version()
-
-git.help()
-
-git.handle()
+cli.handle()
