@@ -5,17 +5,25 @@ const git = new Clif({ name: 'git' })
 const remote = new Clif()
 
 remote.command({
+  name: 'add',
+}, () => {
+  console.log(`git remote add`)
+})
+
+remote.command({
   options: [
     {
-      name: 'verbose',
-      aliases: ['v'],
-      type: 'boolean',
+      name: 'bee',
+      aliases: ['b'],
+      type: 'string',
     },
   ],
 }, ([name], options) => {
-  console.log(`${name}: ${options.v ? 'verbose' : 'bleh'}`)
+  console.log(name, options)
 })
 
 git.program('remote', remote)
 
-git.parse()
+git.version()
+
+git.handle()
