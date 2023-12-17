@@ -1,8 +1,18 @@
-import { parseArgs } from 'https://deno.land/std@0.209.0/cli/parse_args.ts'
-import { Action, Command, Option, OptionType } from './types.ts'
+import {
+  parseArgs,
+  ParseOptions,
+} from 'https://deno.land/std@0.209.0/cli/parse_args.ts'
+import { Action, Command, Option } from './types.ts'
 import typeDetect from 'https://deno.land/x/type_detect@v4.0.8/index.js'
 
-const handleArgParsing = ({ options }: Command, args: string[]) => {
+const handleArgParsing = (
+  { options }: Command,
+  args: string[],
+  parseOptions?: ParseOptions,
+): {
+  positionals: (string | number)[]
+  parsed: Record<string, boolean | string | number>
+} => {
   const alias: Record<string, string[]> = options.reduce(
     (acc, option) => {
       acc[option.name] = option.aliases
@@ -11,20 +21,12 @@ const handleArgParsing = ({ options }: Command, args: string[]) => {
     {} as Record<string, string[]>,
   )
 
-  const { _: positionals, ...parsed } = parseArgs<
-    Record<string, string>,
-    undefined,
-    boolean,
-    string,
-    undefined,
-    undefined,
-    undefined,
-    Record<string, string[]>
-  >(
+  const { _: positionals, ...parsed } = parseArgs(
     args,
     {
       alias,
       boolean: true,
+      ...parseOptions,
     },
   )
 
@@ -39,7 +41,10 @@ const handleArgParsing = ({ options }: Command, args: string[]) => {
     }
   }
 
-  return { positionals, parsed }
+  return {
+    positionals,
+    parsed: parsed as Record<string, boolean | string | number>,
+  }
 }
 
 export class Clif {
@@ -47,10 +52,14 @@ export class Clif {
   prefix = ''
   #commands: Command[] = []
   #programs: Clif[] = []
-  constructor(opts: { name?: string; prefix?: string } = {}) {
-    const { name, prefix } = opts
+  #parseOptions?: ParseOptions
+  constructor(
+    opts: { name?: string; prefix?: string } & ParseOptions = {},
+  ) {
+    const { name, prefix, ...parseOptions } = opts
     this.name = name
     this.prefix = prefix || ''
+    this.#parseOptions = parseOptions
   }
   command(
     { name = '', options = [] }: { name?: string; options?: Option[] },
@@ -69,31 +78,38 @@ export class Clif {
     if (fullPath === '' && this.prefix === '') return console.log(this.#help())
 
     const commands = this.#commands.filter((command) =>
-      fullPath.startsWith(command.path)
+      fullPath.startsWith(command.path) && args.includes(command.name)
     )
     const program = this.#programs.find((program) =>
-      fullPath.startsWith(program.prefix)
+      fullPath.startsWith(program.prefix) && args.includes(program.prefix)
     )
 
     if (program) {
       return program.handle(args.slice(1))
     } else if (commands) {
       // In case of multiple commands under the same, look for the one who has same options
-      const cmd = commands.find((c) =>
-        c.options.find((o) =>
-          args.find((arg) => arg.startsWith(`--${o.name}`)) ||
-          o.aliases.find((a) =>
-            args.find((arg) =>
-              arg.slice(0, 2) === `-${a}` &&
-              (arg[2] === '' || arg[2] === undefined)
+      const cmd =
+        commands.length > 1 && fullPath.includes('--') || fullPath.includes('-')
+          ? commands.find((c) =>
+            c.options.find((o) =>
+              args.find((arg) => arg.startsWith(`--${o.name}`)) ||
+              o.aliases.find((a) =>
+                args.find((arg) =>
+                  arg.slice(0, 2) === `-${a}` &&
+                  (arg[2] === '' || arg[2] === undefined)
+                )
+              )
             )
           )
-        )
-      )
+          : commands.sort((x, y) => y.path.length - x.path.length)[0]
 
       if (!cmd) throw new Error('Command not found')
 
-      const { positionals, parsed } = handleArgParsing(cmd, args)
+      const { positionals, parsed } = handleArgParsing(
+        cmd,
+        args,
+        this.#parseOptions,
+      )
 
       cmd.action(positionals, parsed)
 

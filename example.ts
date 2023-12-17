@@ -23,6 +23,12 @@ remote.command({
 })
 
 remote.command({
+  name: 'addd',
+}, () => {
+  console.log('here')
+})
+
+remote.command({
   options: [
     {
       name: 'bee',
