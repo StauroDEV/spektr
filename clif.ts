@@ -68,19 +68,27 @@ export class Clif {
 
     if (fullPath === '' && this.prefix === '') return console.log(this.#help())
 
-    const command = this.#commands.find((command) =>
-      fullPath.includes(command.path)
+    const commands = this.#commands.filter((command) =>
+      fullPath.startsWith(command.path)
     )
     const program = this.#programs.find((program) =>
-      fullPath.includes(program.prefix)
+      fullPath.startsWith(program.prefix)
     )
 
     if (program) {
       return program.handle(args.slice(1))
-    } else if (command) {
-      const { positionals, parsed } = handleArgParsing(command!, args)
+    } else if (commands) {
+      // In case of multiple commands under the same, look for the one who has same options
+      const cmd = commands.find((c) =>
+        c.options.find((o) =>
+          args.includes(`--${o.name}`) ||
+          o.aliases.find((a) => args.includes(`-${a}`))
+        )
+      )!
 
-      command.action(positionals, parsed)
+      const { positionals, parsed } = handleArgParsing(cmd, args)
+
+      cmd.action(positionals, parsed)
 
       return
     } else throw new Error('Command not found')
