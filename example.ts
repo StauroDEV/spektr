@@ -26,4 +26,6 @@ git.program('remote', remote)
 
 git.version()
 
+git.help()
+
 git.handle()

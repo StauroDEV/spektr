@@ -2,13 +2,8 @@ import { parseArgs } from 'https://deno.land/std@0.209.0/cli/parse_args.ts'
 import { Action, Command, Option, OptionType } from './types.ts'
 import typeDetect from 'https://deno.land/x/type_detect@v4.0.8/index.js'
 
-const commonArgs: Record<string, string[]> = {
-  version: ['v'],
-  help: ['h'],
-}
-
 const handleArgParsing = ({ options }: Command, args: string[]) => {
-  const aliases: Record<string, string[]> = options.reduce(
+  const alias: Record<string, string[]> = options.reduce(
     (acc, option) => {
       acc[option.name] = option.aliases
       return acc
@@ -28,13 +23,13 @@ const handleArgParsing = ({ options }: Command, args: string[]) => {
   >(
     args,
     {
-      alias: { ...commonArgs, ...aliases },
+      alias,
       boolean: true,
     },
   )
 
   for (const [arg, value] of Object.entries(parsed)) {
-    const opt = options.find((x) => x.name === arg || x.aliases.includes(arg))!
+    const opt = options.find((x) => x.name === arg || x.aliases.includes(arg))
     const actualType = typeDetect(value)
     if (!opt) throw new Error(`Unknown argument: ${arg}`)
     if (actualType !== opt.type) {
@@ -71,7 +66,7 @@ export class Clif {
   handle(args = Deno.args): void {
     const fullPath = args.join(' ')
 
-    if (fullPath === '' && this.prefix === '') return this.help()
+    if (fullPath === '' && this.prefix === '') return console.log(this.#help())
 
     const command = this.#commands.find((command) =>
       fullPath.includes(command.path)
@@ -106,7 +101,45 @@ export class Clif {
       console.log(`${this.name}: ${version}\n${misc}`)
     })
   }
+  #help() {
+    let helpMessage = `Usage: ${
+      this.name ? this.name + ' ' : ''
+    }[command] [options]${
+      this.#commands.filter((c) => c.name !== '').length ? `\n\nCommands:` : ''
+    }\n`
+
+    const appendCommands = (commands: Command[], prefix = '') => {
+      commands.forEach((command) => {
+        if (command.name) helpMessage += `  ${prefix}${command.path}\n`
+      })
+    }
+
+    appendCommands(this.#commands)
+
+    const appendPrograms = (programs: Clif[], prefix = '') => {
+      programs.forEach((program) => {
+        const programPrefix = `${prefix}${
+          program.prefix ? program.prefix + ' ' : ''
+        }`
+        helpMessage += `\nCommands for ${programPrefix.trimEnd()}:\n`
+        appendCommands(program.#commands, programPrefix)
+        appendPrograms(program.#programs, programPrefix)
+      })
+    }
+
+    appendPrograms(this.#programs)
+
+    return helpMessage
+  }
   help() {
-    console.log(`Usage: wip`)
+    this.command({
+      options: [{
+        name: 'help',
+        aliases: ['h'],
+        type: 'boolean',
+      }],
+    }, () => {
+      console.log(this.#help())
+    })
   }
 }
