@@ -14,7 +14,7 @@ deploy.command('start', (_, options) => {
   options: [
     {
       name: 'environment',
-      aliases: ['e'],
+      aliases: ['e', 'env'],
       type: 'string',
     },
   ],

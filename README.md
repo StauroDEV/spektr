@@ -7,25 +7,38 @@ middleware-based CLI framework.
 ```ts
 import { Clif } from 'https://deno.land/x/clif.ts'
 
-const git = new Clif({ name: 'git' })
+const cli = new Clif()
 
-const remote = new Clif()
+const deploy = new Clif()
+cli.program('deploy', deploy)
 
-remote.command({
+deploy.command('start', (_, options) => {
+  console.log('Starting deployment...')
+  if (options.environment) {
+    console.log(`Deploying to environment: ${options.environment}`)
+  }
+}, {
   options: [
     {
-      name: 'verbose',
-      aliases: ['v'],
-      type: 'boolean',
+      name: 'environment',
+      aliases: ['e'],
+      type: 'string',
     },
   ],
-}, ([name], options) => {
-  console.log(`${name}: ${options.v ? 'verbose' : 'bleh'}`)
 })
 
-git.program('remote', remote)
+const auth = new Clif()
+cli.program('auth', auth)
 
-git.parse()
+auth.command('login', () => {
+  console.log('Logging in...')
+})
+
+cli.version()
+
+cli.help()
+
+cli.handle()
 ```
 
 ## Features
