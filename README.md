@@ -31,5 +31,7 @@ git.parse()
 ## Features
 
 - Infinite nesting support for commands (aka `git remote add`)
+- Default command support
 - Automatic help/version, including individual commands and programs
 - Argument validation
+- Type safety (coming soon)

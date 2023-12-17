@@ -81,10 +81,17 @@ export class Clif {
       // In case of multiple commands under the same, look for the one who has same options
       const cmd = commands.find((c) =>
         c.options.find((o) =>
-          args.includes(`--${o.name}`) ||
-          o.aliases.find((a) => args.includes(`-${a}`))
+          args.find((arg) => arg.startsWith(`--${o.name}`)) ||
+          o.aliases.find((a) =>
+            args.find((arg) =>
+              arg.slice(0, 2) === `-${a}` &&
+              (arg[2] === '' || arg[2] === undefined)
+            )
+          )
         )
-      )!
+      )
+
+      if (!cmd) throw new Error('Command not found')
 
       const { positionals, parsed } = handleArgParsing(cmd, args)
 
@@ -110,9 +117,17 @@ export class Clif {
     })
   }
   #help() {
+    const defaultCommandOptions = this.#commands.filter((cmd) =>
+      cmd.name === ''
+    ).map((cmd) => cmd.options).map((options) =>
+      options.map((opt) =>
+        [`--${opt.name}`, ...opt.aliases.map((a) => `-${a}`)].join(' | ')
+      )
+    ).map((fmt) => `[${fmt}]`).join(' ')
+
     let helpMessage = `Usage: ${
       this.name ? this.name + ' ' : ''
-    }[command] [options]${
+    }[command] ${defaultCommandOptions}${
       this.#commands.filter((c) => c.name !== '').length ? `\n\nCommands:` : ''
     }\n`
 
