@@ -1,9 +1,8 @@
-import { Clif } from './clif.ts'
+import { CLI } from './clif.ts'
 
-const cli = new Clif()
+const cli = new CLI()
 
-const deploy = new Clif()
-cli.program('deploy', deploy)
+const deploy = cli.program('deploy')
 
 deploy.command('start', (_, options) => {
   console.log('Starting deployment...')
@@ -20,8 +19,7 @@ deploy.command('start', (_, options) => {
   ],
 })
 
-const auth = new Clif()
-cli.program('auth', auth)
+const auth = cli.program('auth')
 
 auth.command('login', () => {
   console.log('Logging in...')

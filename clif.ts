@@ -52,11 +52,11 @@ const hasOptions = (args: string[]) =>
     (arg.startsWith(`--`) || arg.startsWith(`-`)) && arg !== '--' && arg !== '-'
   )
 
-export class Clif {
+export class CLI {
   name?: string
   prefix = ''
   #commands: Command[] = []
-  #programs: Clif[] = []
+  #programs: CLI[] = []
   #parseOptions?: ParseOptions
   constructor(
     opts: { name?: string; prefix?: string } & ParseOptions = {},
@@ -144,10 +144,10 @@ export class Clif {
       return
     } else throw new Error('Command not found')
   }
-  program(prefix: string, program: Clif) {
+  program(prefix: string, program = new CLI({ prefix })) {
     program.prefix = prefix
     this.#programs.push(program)
-    return this
+    return program
   }
   version(version = '0.0.0', misc = `Deno: ${Deno.version.deno}`) {
     this.command(() => {
@@ -183,7 +183,7 @@ export class Clif {
 
     appendCommands(this.#commands)
 
-    const appendPrograms = (programs: Clif[]) => {
+    const appendPrograms = (programs: CLI[]) => {
       programs.forEach((program) => {
         helpMessage += `\nCommands for ${program.prefix}:\n`
         appendCommands(program.#commands)
