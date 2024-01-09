@@ -1,7 +1,7 @@
 type OptionType = boolean | string | number
 
 type Option = {
-  aliases: string[]
+  aliases?: string[]
   name: string
   description?: string
   type: 'boolean' | 'string' | 'number'
