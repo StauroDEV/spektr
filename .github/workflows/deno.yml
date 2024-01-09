@@ -40,3 +40,8 @@ jobs:
         run: deno test --coverage=coverage
       - name: Collect coverage
         run: deno coverage ./coverage --lcov > coverage.lcov
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coverage.lcov
