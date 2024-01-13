@@ -1,11 +1,12 @@
-import { type ParseOptions } from 'https://deno.land/std@0.209.0/cli/parse_args.ts'
+import { type ParseOptions } from 'https://deno.land/std@0.212.0/cli/parse_args.ts'
 import { Action, Command, Option } from './types.ts'
 import { handleArgParsing } from './parse.ts'
-import { hasOptions } from './utils.ts'
+import { hasOptions, makeFullPath } from './utils.ts'
 
 export class CLI {
   name?: string
-  prefix = ''
+  prefix?: string
+  parent?: CLI
   #commands: Command[] = []
   #programs: CLI[] = []
   #parseOptions?: ParseOptions
@@ -14,7 +15,7 @@ export class CLI {
   ) {
     const { name, prefix, ...parseOptions } = opts
     this.name = name
-    this.prefix = prefix || ''
+    this.prefix = prefix
     this.#parseOptions = parseOptions
   }
   command(
@@ -27,11 +28,13 @@ export class CLI {
       : params.options
 
     const common = {
-      path: `${this.prefix ? this.prefix + ' ' : ''}${
-        typeof nameOrAction === 'string' ? nameOrAction : ''
-      }`,
+      path: makeFullPath(
+        this,
+        typeof nameOrAction === 'string' ? [nameOrAction] : undefined,
+      ),
       options,
     }
+
     if (typeof nameOrAction === 'string') {
       if (typeof actionOrOptions !== 'function') {
         throw new Error(`Command action for ${nameOrAction} is required`)
@@ -49,23 +52,32 @@ export class CLI {
       })
     }
   }
+
+  #find(
+    args: string[],
+  ): Command[] {
+    return this.#commands.filter((command) => {
+      if (args.length === 0) return command.name === ''
+      else {
+        return command.path.length !== 0 &&
+          command.path.every((item) => args.includes(item))
+      }
+    })
+  }
+
   handle(args = Deno.args): void {
     if (args.length === 0 && this.prefix === '') {
       return console.log(this.#help())
     }
 
-    const commands = this.#commands.filter((command) => {
-      if (args.length === 0) return command.name === ''
-      else {
-        return command.path !== '' &&
-          args.join(' ').includes(command.path)
-      }
-    })
+    const fullPath = makeFullPath(this)
+
+    const commands = this.#find([...fullPath, ...args])
 
     const program = this.#programs.find((program) => args[0] === program.prefix)
 
     if (program) {
-      return program.handle(args)
+      return program.handle(args.slice(1))
     } else if (commands) {
       // In case of multiple commands under the same, look for the one who has same options
       const cmd = commands.length > 1 && hasOptions(args)
@@ -90,13 +102,14 @@ export class CLI {
         this.#parseOptions,
       )
 
-      cmd.action(positionals, parsed)
+      cmd.action(positionals.slice(cmd.path.length), parsed)
 
       return
     } else throw new Error('Command not found')
   }
-  program(prefix: string, program = new CLI({ prefix })) {
+  program(prefix: string, program = new CLI({ name: prefix, prefix })) {
     program.prefix = prefix
+    program.parent = this
     this.#programs.push(program)
     return program
   }

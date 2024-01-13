@@ -2,10 +2,14 @@ import { CLI } from './clif.ts'
 
 const cli = new CLI()
 
+cli.command('root', () => {
+  console.log('Hello')
+})
+
 const deploy = cli.program('deploy')
 
 deploy.command('start', (_, options) => {
-  console.log('Starting deployment...')
+  console.log(_)
   if (options.environment) {
     console.log(`Deploying to environment: ${options.environment}`)
   }

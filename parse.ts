@@ -1,7 +1,7 @@
 import {
   parseArgs,
   ParseOptions,
-} from 'https://deno.land/std@0.209.0/cli/parse_args.ts'
+} from 'https://deno.land/std@0.212.0/cli/parse_args.ts'
 import typeDetect from 'https://deno.land/x/type_detect@v4.0.8/index.js'
 import { Option } from './types.ts'
 

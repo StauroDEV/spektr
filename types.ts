@@ -7,16 +7,20 @@ type Option = {
   type: 'boolean' | 'string' | 'number'
 }
 
+type ParsedOptions = Record<string, boolean | string | number>
+
+type Positionals = (string | number)[]
+
 type Action = (
-  positionals: (string | number)[],
-  options: Record<string, boolean | string | number>,
+  positionals: Positionals,
+  options: ParsedOptions,
 ) => void
 
 type Command = {
-  path: string
+  path: string[]
   name: string
   action: Action
   options: Option[]
 }
 
-export type { Action, Command, Option, OptionType }
+export type { Action, Command, Option, OptionType, ParsedOptions, Positionals }
