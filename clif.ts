@@ -1,7 +1,7 @@
 import { type ParseOptions } from 'https://deno.land/std@0.212.0/cli/parse_args.ts'
 import { Action, Command, Option } from './types.ts'
 import { handleArgParsing } from './parse.ts'
-import { hasOptions, makeFullPath } from './utils.ts'
+import { findExactCommand, hasOptions, makeFullPath } from './utils.ts'
 
 export class CLI {
   name?: string
@@ -66,8 +66,22 @@ export class CLI {
   }
 
   handle(args = Deno.args): void {
-    if (args.length === 0 && this.prefix === '') {
+    if (args.length === 0 && !this.prefix) {
       return console.log(this.#help())
+    }
+
+    if (hasOptions(args.slice(0, 1))) {
+      const cmd = findExactCommand(this.#find([]), args)
+
+      if (!cmd) throw new Error('Command not found')
+
+      const { positionals, parsed } = handleArgParsing(
+        cmd,
+        args,
+        this.#parseOptions,
+      )
+
+      return cmd.action(positionals.slice(cmd.path.length), parsed)
     }
 
     const fullPath = makeFullPath(this)
@@ -78,21 +92,9 @@ export class CLI {
 
     if (program) {
       return program.handle(args.slice(1))
-    } else if (commands) {
+    } else if (commands.length > 0) {
       // In case of multiple commands under the same, look for the one who has same options
-      const cmd = commands.length > 1 && hasOptions(args)
-        ? commands.find((c) =>
-          c.options.find((o) =>
-            args.find((arg) => arg.startsWith(`--${o.name}`)) ||
-            (o.aliases || []).find((a) =>
-              args.find((arg) =>
-                arg.slice(0, 2) === `-${a}` &&
-                (arg[2] === '' || arg[2] === undefined)
-              )
-            )
-          )
-        )
-        : commands.sort((x, y) => y.path.length - x.path.length)[0]
+      const cmd = findExactCommand(commands, args)
 
       if (!cmd) throw new Error('Command not found')
 
@@ -102,9 +104,7 @@ export class CLI {
         this.#parseOptions,
       )
 
-      cmd.action(positionals.slice(cmd.path.length), parsed)
-
-      return
+      return cmd.action(positionals.slice(cmd.path.length), parsed)
     } else throw new Error('Command not found')
   }
   program(prefix: string, program = new CLI({ name: prefix, prefix })) {
@@ -115,7 +115,11 @@ export class CLI {
   }
   version(version = '0.0.0', misc = `Deno: ${Deno.version.deno}`) {
     this.command(() => {
-      console.log(`${this.name}: ${version}\n${misc}`)
+      console.log(
+        this.name
+          ? `${this.name}: ${version}\n${misc}`
+          : `Clif: ${version}\n${misc}`,
+      )
     }, {
       options: [{
         name: 'version',
@@ -143,7 +147,7 @@ export class CLI {
 
     const appendCommands = (commands: Command[]) => {
       commands.forEach((command) => {
-        if (command.name) helpMessage += `  ${command.path}\n`
+        if (command.name) helpMessage += `  ${command.name}\n`
       })
     }
 
