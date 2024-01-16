@@ -2,14 +2,17 @@ import { CLI } from './clif.ts'
 
 const cli = new CLI({ name: 'stauro' })
 
-cli.command(() => {
+cli.command((...args) => {
+  console.log(args)
 }, {
   options: [{
     name: 'test',
     aliases: ['t'],
     type: 'string',
     description: 'this is a test',
+    required: true,
   }],
+  default: true,
 })
 
 const auth = cli.program('auth')

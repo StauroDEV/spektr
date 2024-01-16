@@ -6,6 +6,11 @@ export const hasOptions = (args: string[]) =>
     (arg.startsWith(`--`) || arg.startsWith(`-`)) && arg !== '--' && arg !== '-'
   )
 
+export const isAnonymousCommand = (args: string[], names: string[]) => {
+  // console.log(names)
+  return hasOptions(args) && !names.some((name) => args.includes(name))
+}
+
 export function makeFullPath(cli: CLI, path: string[] = []): string[] {
   if (cli.prefix !== undefined) {
     path.unshift(cli.prefix)

@@ -2,13 +2,14 @@ import { type ParseOptions } from 'https://deno.land/std@0.212.0/cli/parse_args.
 import { getBorderCharacters, table } from 'https://esm.sh/table@6.8.1'
 import { Action, Command, Option } from './types.ts'
 import { handleArgParsing } from './parse.ts'
-import { findExactCommand, hasOptions, makeFullPath } from './utils.ts'
+import { findExactCommand, isAnonymousCommand, makeFullPath } from './utils.ts'
 
 export class CLI {
   name?: string
   prefix?: string
   parent?: CLI
   #commands: Command[] = []
+  #defaultCommand?: Command
   #programs: CLI[] = []
   #parseOptions?: ParseOptions
   constructor(
@@ -21,12 +22,22 @@ export class CLI {
   }
   command(
     nameOrAction: string | Action,
-    actionOrOptions: Action | { options: Option[] } = { options: [] },
-    params: { options: Option[] } = { options: [] },
+    actionOrOptions: Action | { options: Option[]; default?: boolean } = {
+      options: [],
+      default: false,
+    },
+    params: { options: Option[]; default?: boolean } = {
+      options: [],
+      default: false,
+    },
   ) {
     const options = 'options' in actionOrOptions
       ? actionOrOptions.options
       : params.options
+
+    const isDefault = 'default' in actionOrOptions
+      ? actionOrOptions.default
+      : params.default
 
     const common = {
       path: makeFullPath(
@@ -40,17 +51,21 @@ export class CLI {
       if (typeof actionOrOptions !== 'function') {
         throw new Error(`Command action for ${nameOrAction} is required`)
       }
-      this.#commands.push({
+      const cmd = {
         name: nameOrAction,
         action: actionOrOptions,
         ...common,
-      })
+      }
+      if (isDefault) this.#defaultCommand = cmd
+      else this.#commands.push(cmd)
     } else {
-      this.#commands.push({
+      const cmd = {
         name: '',
         action: nameOrAction,
         ...common,
-      })
+      }
+      if (isDefault) this.#defaultCommand = cmd
+      else this.#commands.push(cmd)
     }
   }
 
@@ -68,11 +83,32 @@ export class CLI {
 
   handle(args = Deno.args): void {
     if (args.length === 0 && !this.prefix) {
-      return console.log(this.#help())
+      if (this.#defaultCommand) {
+        const { positionals, parsed } = handleArgParsing(
+          this.#defaultCommand,
+          args,
+          this.#parseOptions,
+        )
+
+        return this.#defaultCommand.action(positionals, parsed)
+      } else return console.log(this.#help())
     }
 
-    if (hasOptions(args.slice(0, 1))) {
-      const cmd = findExactCommand(this.#find([]), args)
+    if (
+      isAnonymousCommand(
+        args,
+        // @ts-ignore idk
+        [...this.#commands, ...this.#programs].filter((x) =>
+          typeof x.name === 'string'
+        ).map((x) => x.name),
+      )
+    ) {
+      const cmd = findExactCommand(
+        this.#defaultCommand
+          ? [...this.#find([]), this.#defaultCommand]
+          : this.#find([]),
+        args,
+      )
 
       if (!cmd) throw new Error('Command not found')
 

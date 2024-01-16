@@ -5,6 +5,7 @@ type Option = {
   name: string
   description?: string
   type: 'boolean' | 'string' | 'number'
+  required?: boolean
 }
 
 type ParsedOptions = Record<string, boolean | string | number>

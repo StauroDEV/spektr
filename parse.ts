@@ -41,6 +41,7 @@ export const handleArgParsing = (
         `Invalid argument type for ${arg}: expected ${opt.type}, got ${actualType}`,
       )
     }
+    if (opt.required && !value) throw new Error(`Argument ${arg} is required`)
   }
 
   return {
