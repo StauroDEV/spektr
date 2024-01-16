@@ -62,6 +62,21 @@
     "https://deno.land/std@0.212.0/testing/_test_suite.ts": "f10a8a6338b60c403f07a76f3f46bdc9f1e1a820c0a1decddeb2949f7a8a0546",
     "https://deno.land/std@0.212.0/testing/bdd.ts": "3cbd17bd35f629a76ce63446238dfb4632240dd46b3b205027c45fa3dd67e554",
     "https://deno.land/std@0.212.0/testing/mock.ts": "4c35c9bc7d63cabceadf8fa1d0771104d754352c54054e11e068f9af08821234",
-    "https://deno.land/x/type_detect@v4.0.8/index.js": "6d9b21a4a917fe748b61102f2026b3af6b9a22b8ce8ac0d87466c815112ccd41"
+    "https://deno.land/x/type_detect@v4.0.8/index.js": "6d9b21a4a917fe748b61102f2026b3af6b9a22b8ce8ac0d87466c815112ccd41",
+    "https://esm.sh/table@6.8.1": "05bc82d1087de14ac12a36a97b2848b83de7a2f0ed8fee30fbee0d31705b9016",
+    "https://esm.sh/v135/ajv@8.12.0/denonext/dist/runtime/equal.js": "373ae1c5ba304c25e3ef88a3e67fd6aebc97b6e60b735e00a37fb8e4c8478e13",
+    "https://esm.sh/v135/ansi-regex@5.0.1/denonext/ansi-regex.mjs": "738d194ad7037256cfcd3f87d3716d28096261492d163395badfbdab3f72ce15",
+    "https://esm.sh/v135/ansi-styles@4.3.0/denonext/ansi-styles.mjs": "5e269cb888accec3df1a52a2f5d448e300215c7f00f32d71ce115b1b0a798efe",
+    "https://esm.sh/v135/astral-regex@2.0.0/denonext/astral-regex.mjs": "8238a2aa456297210a6710b687c802724070516b4ac0be03f0fc8330d2387833",
+    "https://esm.sh/v135/color-convert@2.0.1/denonext/color-convert.mjs": "61e7d3f8718d2307965807a20f7287f0ca4ff31e99d8e713d1ae214d668e34a2",
+    "https://esm.sh/v135/color-name@1.1.4/denonext/color-name.mjs": "88abd3b0b19ef92d342221b38dc51760a4bab4540308c2dcb9db3c2cc68e5986",
+    "https://esm.sh/v135/emoji-regex@8.0.0/denonext/emoji-regex.mjs": "da8ce329dbc5d6fab22dc15280b7f53836043511ca208246f376e0808d98c656",
+    "https://esm.sh/v135/fast-deep-equal@3.1.3/denonext/fast-deep-equal.mjs": "6313b3e05436550e1c0aeb2a282206b9b8d9213b4c6f247964dd7bb4835fb9e5",
+    "https://esm.sh/v135/is-fullwidth-code-point@3.0.0/denonext/is-fullwidth-code-point.mjs": "c499d96ea8ae837a9e8d2f64d39411eccb8f931e0fb802ae84b6edb731f5afbc",
+    "https://esm.sh/v135/lodash.truncate@4.4.2/denonext/lodash.truncate.mjs": "104302edd834f1edd3b50de479ff941c7377f60c5c64273829d4974fa377d7f7",
+    "https://esm.sh/v135/slice-ansi@4.0.0/denonext/slice-ansi.mjs": "d23662ca205440b092fbadd8c0bde64a2d35653b6d396c1819c29380ecbcbc40",
+    "https://esm.sh/v135/string-width@4.2.3/denonext/string-width.mjs": "40509a7b83af8b6f1aad2b062a306e7716299641a80998765f6e336693f33025",
+    "https://esm.sh/v135/strip-ansi@6.0.1/denonext/strip-ansi.mjs": "6430e395d970184a06d722bd7478778fefefe40c74bc74bb6ec17719c5d9db6b",
+    "https://esm.sh/v135/table@6.8.1/denonext/table.mjs": "9ae9ea0cd1f263330cfd22b6d0a2ef7d55150a08efe82055fc1c99c0b406e1af"
   }
 }

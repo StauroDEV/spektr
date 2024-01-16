@@ -1,4 +1,5 @@
 import { type ParseOptions } from 'https://deno.land/std@0.212.0/cli/parse_args.ts'
+import { getBorderCharacters, table } from 'https://esm.sh/table@6.8.1'
 import { Action, Command, Option } from './types.ts'
 import { handleArgParsing } from './parse.ts'
 import { findExactCommand, hasOptions, makeFullPath } from './utils.ts'
@@ -125,23 +126,31 @@ export class CLI {
         name: 'version',
         aliases: ['v'],
         type: 'boolean',
+        description: 'shows current version',
       }],
     })
   }
   #help() {
-    const defaultCommandOptions = this.#commands.filter((cmd) =>
-      cmd.name === ''
-    ).map((cmd) => cmd.options).map((options) =>
-      options.map((opt) =>
-        [`--${opt.name}`, ...(opt.aliases || []).map((a) => `-${a}`)].join(
-          ' | ',
-        )
-      )
+    const defaultCommands = this.#commands.filter((cmd) => cmd.name === '')
+
+    const defaultCommandOptions = defaultCommands.map((cmd) => cmd.options).map(
+      (options) =>
+        options.map((opt) =>
+          opt.aliases ? `-${opt.aliases[0]}` : `--${opt.name}`
+        ),
     ).map((fmt) => `[${fmt}]`).join(' ')
 
+    const getParentName = (cli: CLI | null): string => {
+      if (cli?.parent) {
+        return `${getParentName(cli.parent)} ${cli.name}`
+      } else {
+        return cli?.name || ''
+      }
+    }
+
     let helpMessage = `Usage: ${
-      this.name ? this.name + ' ' : ''
-    }[command] ${defaultCommandOptions}${
+      getParentName(this)
+    } [command] ${defaultCommandOptions}${
       this.#commands.filter((c) => c.name !== '').length ? `\n\nCommands:` : ''
     }\n`
 
@@ -155,13 +164,37 @@ export class CLI {
 
     const appendPrograms = (programs: CLI[]) => {
       programs.forEach((program) => {
-        helpMessage += `\nCommands for ${program.prefix}:\n`
+        helpMessage += `\nCommands for ${getParentName(program)}:\n`
         appendCommands(program.#commands)
         appendPrograms(program.#programs)
       })
     }
+    if (!this.prefix || this.parent) {
+      appendPrograms(this.#programs)
+    }
+    if (defaultCommands.length !== 0) {
+      helpMessage += `\nOptions:\n`
+      const layout: string[][] = []
+      defaultCommands.forEach((command) =>
+        command.options.forEach((option) => {
+          layout.push([
+            [
+              `--${option.name}`,
+              ...((option.aliases || []).map((a) => `-${a}`)),
+            ].join(', '),
+            option.description || '',
+          ])
+        })
+      )
 
-    appendPrograms(this.#programs)
+      helpMessage += table(layout, {
+        border: getBorderCharacters('void'),
+        columnDefault: {
+          paddingLeft: 4,
+        },
+        drawHorizontalLine: () => false,
+      })
+    }
 
     return helpMessage
   }
@@ -173,6 +206,7 @@ export class CLI {
         name: 'help',
         aliases: ['h'],
         type: 'boolean',
+        description: 'shows this message',
       }],
     })
   }
