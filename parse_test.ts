@@ -29,4 +29,24 @@ describe('handleArgParsing', () => {
 
     expect(parsed).toEqual({ test: 'val', t: 'val' })
   })
+  it('throws on unknown arg', () => {
+    try {
+      handleArgParsing({
+        options: [],
+      }, ['-t=val'])
+    } catch (e) {
+      expect((e as Error).message).toEqual('Unknown argument: t')
+    }
+  })
+  it('throws on invalid arg type', () => {
+    try {
+      handleArgParsing({
+        options: [{ name: 'test', type: 'boolean' }],
+      }, ['--test=val'])
+    } catch (e) {
+      expect((e as Error).message).toEqual(
+        'Invalid argument type for test: expected boolean, got string',
+      )
+    }
+  })
 })
