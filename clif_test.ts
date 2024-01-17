@@ -89,5 +89,37 @@ describe('CLI', () => {
         returned: 'deploy manage start',
       })
     })
+    it('help message is returned if no default command was defined', () => {
+      const cli = new CLI()
+
+      cli.command('test', () => {})
+
+      const originalConsoleLog = console.log
+
+      const consoleSpy = spy(originalConsoleLog)
+
+      console.log = consoleSpy
+
+      cli.handle([])
+
+      assertSpyCall(consoleSpy, 0, {
+        args: ['Usage:  [command] \n\nCommands:\n  test\n'],
+      })
+
+      console.log = originalConsoleLog
+    })
+    it('default command is used if no command is passed', () => {
+      const cli = new CLI()
+
+      const actionSpy = spy(() => `Default command`)
+
+      cli.command('test', actionSpy, { default: true })
+
+      cli.handle([])
+
+      assertSpyCall(actionSpy, 0, {
+        returned: 'Default command',
+      })
+    })
   })
 })

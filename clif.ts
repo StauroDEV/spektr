@@ -22,18 +22,19 @@ export class CLI {
   }
   command(
     nameOrAction: string | Action,
-    actionOrOptions: Action | { options: Option[]; default?: boolean } = {
+    actionOrOptions: Action | { options?: Option[]; default?: boolean } = {
       options: [],
       default: false,
     },
-    params: { options: Option[]; default?: boolean } = {
+    params: { options?: Option[]; default?: boolean } = {
       options: [],
       default: false,
     },
   ) {
-    const options = 'options' in actionOrOptions
-      ? actionOrOptions.options
-      : params.options
+    const options =
+      ('options' in actionOrOptions
+        ? actionOrOptions.options
+        : params.options) || [] as Option[]
 
     const isDefault = 'default' in actionOrOptions
       ? actionOrOptions.default
