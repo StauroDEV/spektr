@@ -30,7 +30,21 @@ export const handleArgParsing = (
     },
   )
 
-  for (const [arg, value] of Object.entries(parsed)) {
+  const requiredOptions = options.filter((opt) => opt.required)
+
+  const parsedArgs = Object.entries(parsed)
+
+  for (const opt of requiredOptions) {
+    if (
+      !parsedArgs.find((arg) =>
+        arg[0] === opt.name || (opt.aliases || []).includes(arg[0])
+      )
+    ) {
+      throw new Error(`Argument ${opt.name} is required`)
+    }
+  }
+
+  for (const [arg, value] of parsedArgs) {
     const opt = options.find((x) =>
       x.name === arg || (x.aliases || []).includes(arg)
     )
@@ -41,7 +55,6 @@ export const handleArgParsing = (
         `Invalid argument type for ${arg}: expected ${opt.type}, got ${actualType}`,
       )
     }
-    if (opt.required && !value) throw new Error(`Argument ${arg} is required`)
   }
 
   return {

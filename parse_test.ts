@@ -49,4 +49,31 @@ describe('handleArgParsing', () => {
       )
     }
   })
+  it('throws if required arg is not present', () => {
+    try {
+      handleArgParsing({
+        options: [{ name: 'test', type: 'boolean', required: true }],
+      }, [])
+    } catch (e) {
+      expect((e as Error).message).toEqual(
+        'Argument test is required',
+      )
+    }
+  })
+  it('does not throw for required if alias is passed', () => {
+    try {
+      handleArgParsing({
+        options: [{
+          name: 'test',
+          type: 'boolean',
+          required: true,
+          aliases: ['t'],
+        }],
+      }, ['t'])
+    } catch (e) {
+      expect((e as Error).message).toEqual(
+        'Argument test is required',
+      )
+    }
+  })
 })
