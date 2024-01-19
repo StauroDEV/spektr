@@ -48,3 +48,4 @@ cli.handle()
 - Automatic help/version, including individual commands and programs
 - Argument validation
 - Auto-complete for options
+- Color plugin to make help messages colorful

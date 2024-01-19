@@ -2,15 +2,20 @@ import { type ParseOptions } from 'https://deno.land/std@0.212.0/cli/parse_args.
 import { getBorderCharacters, table } from 'https://esm.sh/table@6.8.1'
 import { Action, Command, Option } from './types.ts'
 import { handleArgParsing } from './parse.ts'
-import { findExactCommand, isAnonymousCommand, makeFullPath } from './utils.ts'
+import {
+  findDeepestParent,
+  findExactCommand,
+  isAnonymousCommand,
+  makeFullPath,
+} from './utils.ts'
 
 export class CLI {
   name?: string
   prefix?: string
   parent?: CLI
-  #commands: Command[] = []
+  commands: Command[] = []
   #defaultCommand?: Command
-  #programs: CLI[] = []
+  programs: CLI[] = []
   #parseOptions?: ParseOptions
   constructor(
     opts: { name?: string; prefix?: string } & ParseOptions = {},
@@ -68,7 +73,7 @@ export class CLI {
         ...common,
       } as Command<T>
       if (isDefault) this.#defaultCommand = cmd
-      else this.#commands.push(cmd)
+      else this.commands.push(cmd)
     } else {
       const cmd = {
         name: '',
@@ -76,7 +81,7 @@ export class CLI {
         ...common,
       } as Command<T>
       if (isDefault) this.#defaultCommand = cmd
-      else this.#commands.push(cmd)
+      else this.commands.push(cmd)
     }
 
     return this
@@ -85,7 +90,7 @@ export class CLI {
   #find(
     args: string[],
   ): Command[] {
-    return this.#commands.filter((command) => {
+    return this.commands.filter((command) => {
       if (args.length === 0) return command.name === ''
       else {
         return command.path.length !== 0 &&
@@ -104,14 +109,14 @@ export class CLI {
         )
 
         return this.#defaultCommand.action(positionals, parsed)
-      } else return console.log(this.#help())
+      } else return console.log(this.createHelpMessage())
     }
 
     if (
       isAnonymousCommand(
         args,
         // @ts-ignore idk
-        [...this.#commands, ...this.#programs].filter((x) =>
+        [...this.commands, ...this.programs].filter((x) =>
           typeof x.name === 'string'
         ).map((x) => x.name),
       )
@@ -138,7 +143,7 @@ export class CLI {
 
     const commands = this.#find([...fullPath, ...args])
 
-    const program = this.#programs.find((program) => args[0] === program.prefix)
+    const program = this.programs.find((program) => args[0] === program.prefix)
 
     if (program) {
       return program.handle(args.slice(1))
@@ -160,16 +165,23 @@ export class CLI {
   program(prefix: string, program = new CLI({ name: prefix, prefix })) {
     program.prefix = prefix
     program.parent = this
-    this.#programs.push(program)
+    this.programs.push(program)
     return program
   }
-  version(version = '0.0.0', misc = `Deno: ${Deno.version.deno}`) {
+  createVersionMessage(
+    version = '0.0.0',
+    misc = '',
+  ) {
+    return this.name
+      ? `${this.name}: ${version}${misc}`
+      : `Clif: ${version}${misc}`
+  }
+  version(version = '0.0.0', misc = '') {
     this.command(() => {
-      console.log(
-        this.name
-          ? `${this.name}: ${version}\n${misc}`
-          : `Clif: ${version}\n${misc}`,
-      )
+      const parent = findDeepestParent(this)
+      if (parent.prefix !== this.prefix) {
+        console.log(parent.createVersionMessage(version, misc))
+      } else console.log(this.createVersionMessage(version, misc))
     }, {
       options: [{
         name: 'version',
@@ -179,8 +191,8 @@ export class CLI {
       }],
     })
   }
-  #help() {
-    const defaultCommands = this.#commands.filter((cmd) => cmd.name === '')
+  createHelpMessage() {
+    const defaultCommands = this.commands.filter((cmd) => cmd.name === '')
 
     const defaultCommandOptions = defaultCommands.map((cmd) => cmd.options).map(
       (options) =>
@@ -200,7 +212,7 @@ export class CLI {
     let helpMessage = `Usage: ${
       getParentName(this)
     } [command] ${defaultCommandOptions}${
-      this.#commands.filter((c) => c.name !== '').length ? `\n\nCommands:` : ''
+      this.commands.filter((c) => c.name !== '').length ? `\n\nCommands:` : ''
     }\n`
 
     const appendCommands = (commands: Command[]) => {
@@ -209,17 +221,17 @@ export class CLI {
       })
     }
 
-    appendCommands(this.#commands)
+    appendCommands(this.commands)
 
     const appendPrograms = (programs: CLI[]) => {
       programs.forEach((program) => {
         helpMessage += `\nCommands for ${getParentName(program)}:\n`
-        appendCommands(program.#commands)
-        appendPrograms(program.#programs)
+        appendCommands(program.commands)
+        appendPrograms(program.programs)
       })
     }
     if (!this.prefix || this.parent) {
-      appendPrograms(this.#programs)
+      appendPrograms(this.programs)
     }
     if (defaultCommands.length !== 0) {
       helpMessage += `\nOptions:\n`
@@ -249,7 +261,7 @@ export class CLI {
   }
   help() {
     this.command(() => {
-      console.log(this.#help())
+      console.log(this.createHelpMessage())
     }, {
       options: [{
         name: 'help',

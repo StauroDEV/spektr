@@ -1,13 +1,12 @@
 import { CLI } from './clif.ts'
 import { Command } from './types.ts'
 
-export const hasOptions = (args: string[]) =>
-  args.find((arg) =>
+export const hasOptions = (args: string[]): boolean =>
+  !!args.find((arg) =>
     (arg.startsWith(`--`) || arg.startsWith(`-`)) && arg !== '--' && arg !== '-'
   )
 
 export const isAnonymousCommand = (args: string[], names: string[]) => {
-  // console.log(names)
   return hasOptions(args) && !names.some((name) => args.includes(name))
 }
 
@@ -19,6 +18,14 @@ export function makeFullPath(cli: CLI, path: string[] = []): string[] {
     return makeFullPath(cli.parent, path)
   } else {
     return path
+  }
+}
+
+export function findDeepestParent(cli: CLI): CLI {
+  if (cli.parent) {
+    return findDeepestParent(cli.parent)
+  } else {
+    return cli
   }
 }
 
