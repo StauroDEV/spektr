@@ -1,27 +1,36 @@
 type OptionType = boolean | string | number
 
 type Option = {
-  aliases?: string[]
+  aliases: readonly string[]
   name: string
   description?: string
   type: 'boolean' | 'string' | 'number'
   required?: boolean
 }
 
-type ParsedOptions = Record<string, boolean | string | number>
-
 type Positionals = (string | number)[]
 
-type Action = (
+type TypeConverter<T extends string> = T extends 'string' ? string
+  : T extends 'boolean' ? boolean
+  : T extends 'number' ? number
+  : never
+
+type ParsedOptions<T extends readonly Option[]> = {
+  [K in T[number] as K['name'] | K['aliases'][number]]: TypeConverter<K['type']>
+}
+
+type Action<
+  T extends readonly Option[],
+> = (
   positionals: Positionals,
-  options: ParsedOptions,
+  options: ParsedOptions<T>,
 ) => void
 
-type Command = {
+type Command<T extends readonly Option[] = readonly Option[]> = {
   path: string[]
   name: string
-  action: Action
-  options: Option[]
+  action: Action<T>
+  options: T
 }
 
 export type { Action, Command, Option, OptionType, ParsedOptions, Positionals }

@@ -20,27 +20,37 @@ export class CLI {
     this.prefix = prefix
     this.#parseOptions = parseOptions
   }
-  command(
-    nameOrAction: string | Action,
-    actionOrOptions: Action | { options?: Option[]; default?: boolean } = {
-      options: [],
-      default: false,
-    },
-    params: { options?: Option[]; default?: boolean } = {
-      options: [],
-      default: false,
-    },
-  ) {
+  command<T extends readonly Option[] = readonly Option[]>(
+    name: string,
+    action: Action<T>,
+    params?: { readonly options?: T; default?: boolean },
+  ): CLI
+
+  command<T extends readonly Option[] = readonly Option[]>(
+    name: string,
+    action: Action<T>,
+  ): CLI
+
+  command<T extends readonly Option[] = readonly Option[]>(
+    action: Action<T>,
+    params?: { readonly options?: T; default?: boolean },
+  ): CLI
+
+  command<T extends readonly Option[] = readonly Option[]>(
+    nameOrAction: string | Action<T>,
+    actionOrOptions?: Action<T> | { readonly options?: T; default?: boolean },
+    params?: { readonly options?: T; default?: boolean },
+  ): CLI {
     const options =
-      ('options' in actionOrOptions
+      (actionOrOptions && 'options' in actionOrOptions
         ? actionOrOptions.options
-        : params.options) || [] as Option[]
+        : params?.options) || [] as unknown as T
 
-    const isDefault = 'default' in actionOrOptions
+    const isDefault = actionOrOptions && 'default' in actionOrOptions
       ? actionOrOptions.default
-      : params.default
+      : params?.default
 
-    const common = {
+    const common: { path: string[]; options: T } = {
       path: makeFullPath(
         this,
         typeof nameOrAction === 'string' ? [nameOrAction] : undefined,
@@ -56,7 +66,7 @@ export class CLI {
         name: nameOrAction,
         action: actionOrOptions,
         ...common,
-      }
+      } as Command<T>
       if (isDefault) this.#defaultCommand = cmd
       else this.#commands.push(cmd)
     } else {
@@ -64,10 +74,12 @@ export class CLI {
         name: '',
         action: nameOrAction,
         ...common,
-      }
+      } as Command<T>
       if (isDefault) this.#defaultCommand = cmd
       else this.#commands.push(cmd)
     }
+
+    return this
   }
 
   #find(

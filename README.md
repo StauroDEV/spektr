@@ -47,4 +47,4 @@ cli.handle()
 - Default command support
 - Automatic help/version, including individual commands and programs
 - Argument validation
-- Type safety (coming soon)
+- Auto-complete for options

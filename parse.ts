@@ -3,19 +3,21 @@ import {
   ParseOptions,
 } from 'https://deno.land/std@0.212.0/cli/parse_args.ts'
 import typeDetect from 'https://deno.land/x/type_detect@v4.0.8/index.js'
-import { Option } from './types.ts'
+import { Option, ParsedOptions } from './types.ts'
 
-export const handleArgParsing = (
-  { options }: { options: Option[] },
+export const handleArgParsing = <
+  T extends readonly Option[] = readonly Option[],
+>(
+  { options }: { options: T },
   args: string[],
   parseOptions?: ParseOptions,
 ): {
   positionals: (string | number)[]
-  parsed: Record<string, boolean | string | number>
+  parsed: ParsedOptions<typeof options>
 } => {
   const alias: Record<string, string[]> = options.reduce(
     (acc, option) => {
-      acc[option.name] = option.aliases || []
+      acc[option.name] = option.aliases as string[] || []
       return acc
     },
     {} as Record<string, string[]>,
@@ -59,6 +61,6 @@ export const handleArgParsing = (
 
   return {
     positionals,
-    parsed: parsed as Record<string, boolean | string | number>,
+    parsed: parsed as ParsedOptions<typeof options>,
   }
 }

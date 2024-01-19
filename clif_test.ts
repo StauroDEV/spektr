@@ -36,13 +36,19 @@ describe('CLI', () => {
     it('args and positionals are passed to the action', () => {
       const cli = new CLI({ name: 'cli' })
 
-      const actionSpy = spy((pos: Positionals, args: ParsedOptions) => {
-        return `${pos[0]}: ${JSON.stringify(args)}`
-      })
+      const options = [{
+        name: 'value',
+        aliases: ['v'],
+        type: 'string',
+      }] as const
 
-      cli.command('test', actionSpy, {
-        options: [{ name: 'value', aliases: ['v'], type: 'string' }],
-      })
+      const actionSpy = spy(
+        (pos: Positionals, args: ParsedOptions<typeof options>) => {
+          return `${pos[0]}: ${JSON.stringify(args)}`
+        },
+      )
+
+      cli.command<typeof options>('test', actionSpy, { options })
 
       cli.handle(['--value=str', 'test', 'pos'])
 

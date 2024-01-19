@@ -9,6 +9,7 @@ describe('handleArgParsing', () => {
         {
           name: 'test',
           type: 'string',
+          aliases: [],
         },
       ],
     }, ['pos1', '--test=val', 'pos2'])
@@ -41,7 +42,7 @@ describe('handleArgParsing', () => {
   it('throws on invalid arg type', () => {
     try {
       handleArgParsing({
-        options: [{ name: 'test', type: 'boolean' }],
+        options: [{ name: 'test', type: 'boolean', aliases: [] }],
       }, ['--test=val'])
     } catch (e) {
       expect((e as Error).message).toEqual(
@@ -52,7 +53,12 @@ describe('handleArgParsing', () => {
   it('throws if required arg is not present', () => {
     try {
       handleArgParsing({
-        options: [{ name: 'test', type: 'boolean', required: true }],
+        options: [{
+          name: 'test',
+          type: 'boolean',
+          required: true,
+          aliases: [],
+        }],
       }, [])
     } catch (e) {
       expect((e as Error).message).toEqual(
