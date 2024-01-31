@@ -1,9 +1,17 @@
+import { getBorderCharacters, table } from 'https://esm.sh/table@6.8.1'
 import { CLI } from './clif.ts'
-import { Command } from './types.ts'
+import type {
+  Action,
+  Command,
+  Option,
+  ParsedOptions,
+  Positionals,
+} from './types.ts'
 
-export const hasOptions = (args: string[]): boolean =>
+export const hasOptions = (args: Positionals): boolean =>
   !!args.find((arg) =>
-    (arg.startsWith(`--`) || arg.startsWith(`-`)) && arg !== '--' && arg !== '-'
+    typeof arg === 'string' && (arg.startsWith(`--`) || arg.startsWith(`-`)) &&
+    arg !== '--' && arg !== '-'
   )
 
 export const isAnonymousCommand = (args: string[], names: string[]) => {
@@ -43,4 +51,38 @@ export function findExactCommand(commands: Command[], args: string[]) {
       )
     )
     : commands.sort((x, y) => y.path.length - x.path.length)[0]
+}
+
+export const helpMessageForCommand = <
+  T extends readonly Option[] = readonly Option[],
+>(command: Command<T>) => {
+  const layout: string[][] = []
+  let msg = `Usage: ${command.name} [args]\n`
+  command.options.forEach((option) => {
+    layout.push([
+      [
+        `--${option.name}`,
+        ...((option.aliases || []).map((a) => `-${a}`)),
+      ].join(', '),
+      option.description || '',
+    ])
+  })
+
+  msg += table(layout, {
+    border: getBorderCharacters('void'),
+    columnDefault: {
+      paddingLeft: 4,
+    },
+    drawHorizontalLine: () => false,
+  })
+
+  return msg
+}
+
+export const handleActionWithHelp = <
+  T extends readonly Option[] = readonly Option[],
+>(command: Command<T>, positionals: Positionals, options: ParsedOptions<T>) => {
+  if (command.name !== '' && ('help' in options || 'h' in options)) {
+    return console.log(helpMessageForCommand(command))
+  } else return command.action(positionals, options)
 }

@@ -15,6 +15,14 @@ export const handleArgParsing = <
   positionals: (string | number)[]
   parsed: ParsedOptions<typeof options>
 } => {
+  // add help message for each command
+  options = [...options, {
+    name: 'help',
+    aliases: ['h'],
+    description: 'Print help message',
+    type: 'boolean',
+  }] as unknown as T
+
   const alias: Record<string, string[]> = options.reduce(
     (acc, option) => {
       acc[option.name] = option.aliases as string[] || []

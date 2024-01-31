@@ -1,7 +1,13 @@
-import { describe, it } from 'https://deno.land/std@0.212.0/testing/bdd.ts'
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  it,
+} from 'https://deno.land/std@0.212.0/testing/bdd.ts'
 import { expect } from 'https://deno.land/std@0.212.0/expect/mod.ts'
 import {
   assertSpyCall,
+  Spy,
   spy,
 } from 'https://deno.land/std@0.212.0/testing/mock.ts'
 import { CLI } from './clif.ts'
@@ -95,25 +101,6 @@ describe('CLI', () => {
         returned: 'deploy manage start',
       })
     })
-    it('help message is returned if no default command was defined', () => {
-      const cli = new CLI()
-
-      cli.command('test', () => {})
-
-      const originalConsoleLog = console.log
-
-      const consoleSpy = spy(originalConsoleLog)
-
-      console.log = consoleSpy
-
-      cli.handle([])
-
-      assertSpyCall(consoleSpy, 0, {
-        args: ['Usage:  [command] \n\nCommands:\n  test\n'],
-      })
-
-      console.log = originalConsoleLog
-    })
     it('default command is used if no command is passed', () => {
       const cli = new CLI()
 
@@ -126,6 +113,118 @@ describe('CLI', () => {
       assertSpyCall(actionSpy, 0, {
         returned: 'Default command',
       })
+    })
+    it('throws if command is not found', () => {
+      const cli = new CLI()
+
+      cli.command('test', () => `test`)
+
+      expect(() => cli.handle(['test2'])).toThrow('Command not found')
+    })
+    it('throws if trying to use a default command which is not defined', () => {
+      const cli = new CLI()
+
+      expect(() => cli.handle(['default', '--arg'])).toThrow(
+        'Command not found',
+      )
+    })
+  })
+  describe('cli.help()', () => {
+    const originalConsoleLog = console.log
+    let consoleSpy: Spy<typeof console['log']>
+
+    beforeEach(() => {
+      consoleSpy = spy(originalConsoleLog)
+      console.log = consoleSpy
+    })
+    afterEach(() => {
+      console.log = originalConsoleLog
+    })
+    it('help message is returned if no default command was defined', () => {
+      const cli = new CLI()
+
+      cli.command('test', () => {})
+
+      cli.handle([])
+
+      assertSpyCall(consoleSpy, 0, {
+        args: ['Usage:  [command] \n\nCommands:\n  test\n'],
+      })
+    })
+    it('prints out help for defined commands', () => {
+      const cli = new CLI({ name: 'player' })
+
+      cli.command('run', () => 'Run', {
+        options: [{
+          name: 'speed',
+          aliases: ['s'],
+          type: 'number',
+          description: 'speed in km/h',
+        }],
+      })
+
+      cli.help()
+
+      cli.handle(['--help'])
+
+      assertSpyCall(consoleSpy, 0, {
+        args: [
+          'Usage: player [command] [-h]\n' +
+          '\n' +
+          'Commands:\n' +
+          '  run\n' +
+          '\n' +
+          'Options:\n' +
+          '    --help, -h     shows this message \n',
+        ],
+      })
+
+      cli.handle(['run', '--help'])
+
+      assertSpyCall(consoleSpy, 1, {
+        args: [],
+      })
+    })
+  })
+  describe('cli.version()', () => {
+    const originalConsoleLog = console.log
+    let consoleSpy: Spy<typeof console['log']>
+    beforeEach(() => {
+      consoleSpy = spy(originalConsoleLog)
+      console.log = consoleSpy
+    })
+    afterEach(() => {
+      console.log = originalConsoleLog
+    })
+    it('version is 0.0.0 by default', () => {
+      const cli = new CLI({ name: 'cli' })
+
+      cli.version()
+
+      cli.handle(['--version'])
+
+      assertSpyCall(consoleSpy, 0, { args: ['cli: 0.0.0'] })
+    })
+    it('name is Clif by default', () => {
+      const cli = new CLI({})
+
+      cli.version()
+
+      cli.handle(['--version'])
+
+      assertSpyCall(consoleSpy, 0, { args: ['Clif: 0.0.0'] })
+    })
+    it('subcommand version() invokes its root parent version', () => {
+      const cli = new CLI({ name: 'root' })
+
+      const sub = new CLI({ name: 'sub' })
+
+      cli.version()
+      sub.version()
+
+      cli.handle(['sub', '--version'])
+
+      assertSpyCall(consoleSpy, 0, { args: ['root: 0.0.0'] })
     })
   })
 })

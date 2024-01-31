@@ -5,6 +5,7 @@ import { handleArgParsing } from './parse.ts'
 import {
   findDeepestParent,
   findExactCommand,
+  handleActionWithHelp,
   isAnonymousCommand,
   makeFullPath,
 } from './utils.ts'
@@ -108,7 +109,7 @@ export class CLI {
           this.#parseOptions,
         )
 
-        return this.#defaultCommand.action(positionals, parsed)
+        return handleActionWithHelp(this.#defaultCommand, positionals, parsed)
       } else return console.log(this.createHelpMessage())
     }
 
@@ -136,7 +137,11 @@ export class CLI {
         this.#parseOptions,
       )
 
-      return cmd.action(positionals.slice(cmd.path.length), parsed)
+      return handleActionWithHelp(
+        cmd,
+        positionals.slice(cmd.path.length),
+        parsed,
+      )
     }
 
     const fullPath = makeFullPath(this)
@@ -159,7 +164,11 @@ export class CLI {
         this.#parseOptions,
       )
 
-      return cmd.action(positionals.slice(cmd.path.length), parsed)
+      return handleActionWithHelp(
+        cmd,
+        positionals.slice(cmd.path.length),
+        parsed,
+      )
     } else throw new Error('Command not found')
   }
   program(prefix: string, program = new CLI({ name: prefix, prefix })) {
