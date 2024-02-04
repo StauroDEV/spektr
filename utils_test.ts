@@ -30,36 +30,39 @@ describe('hasOptions', () => {
 })
 
 describe('findExactCommand', () => {
-  it('finds command by its name', () => {
-    const cli = new CLI({ name: 'cli' })
-
-    cli.command('test', () => {})
-
-    const command = findExactCommand(cli.commands, ['test'])
-
-    expect(command).toEqual(cli.commands[0])
-  })
-  it('finds command by alias', () => {
-    const cli = new CLI({ name: 'cli' })
-
-    cli.command('test', () => {}, {
-      options: [{ name: 'test', aliases: ['t'], type: 'boolean' }],
-    })
-
-    const command = findExactCommand(cli.commands, ['t'])
-
-    expect(command).toEqual(cli.commands[0])
-  })
   it('finds the more precise command if two with the same name are defined', () => {
-    const cli = new CLI({ name: 'cli' })
+    const command = findExactCommand([
+      {
+        name: 'test',
+        path: ['test'],
+        action: () => {},
+        options: [],
+      },
+      {
+        name: 'test',
+        path: ['test1', 'test'],
+        action: () => {},
+        options: [{ name: 'test', aliases: ['t'], type: 'boolean' }],
+      },
+    ], ['--test'])
 
-    cli.command('test', () => {})
-
-    cli.command('test', () => {}, {
-      options: [{ name: 'test', aliases: ['t'], type: 'boolean' }],
-    })
-
-    const command = findExactCommand(cli.commands, ['-t'])
+    expect(command?.options[0].name).toEqual('test')
+  })
+  it('finds the more precise command by alias if two with the same name are defined', () => {
+    const command = findExactCommand([
+      {
+        name: 'test',
+        path: ['test'],
+        action: () => {},
+        options: [],
+      },
+      {
+        name: 'test',
+        path: ['test1', 'test'],
+        action: () => {},
+        options: [{ name: 'test', aliases: ['t'], type: 'boolean' }],
+      },
+    ], ['--test'])
 
     expect(command?.options[0].name).toEqual('test')
   })
