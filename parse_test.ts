@@ -4,7 +4,7 @@ import { handleArgParsing } from './parse.ts'
 
 describe('handleArgParsing', () => {
   it('parses command line arguments and positionals based on given options', () => {
-    const { positionals, parsed } = handleArgParsing({
+    expect(handleArgParsing({
       options: [
         {
           name: 'test',
@@ -12,13 +12,13 @@ describe('handleArgParsing', () => {
           aliases: [],
         },
       ],
-    }, ['pos1', '--test=val', 'pos2'])
-
-    expect(positionals).toEqual(['pos1', 'pos2'])
-    expect(parsed).toEqual({ test: 'val' })
+    }, ['pos1', '--test=val', 'pos2'])).toEqual({
+      parsed: { test: 'val' },
+      positionals: ['pos1', 'pos2'],
+    })
   })
   it('supports aliases and returns them as well', () => {
-    const { parsed } = handleArgParsing({
+    expect(handleArgParsing({
       options: [
         {
           name: 'test',
@@ -26,9 +26,10 @@ describe('handleArgParsing', () => {
           aliases: ['t'],
         },
       ],
-    }, ['-t=val'])
-
-    expect(parsed).toEqual({ test: 'val', t: 'val' })
+    }, ['-t=val'])).toEqual({
+      parsed: { test: 'val', t: 'val' },
+      positionals: [],
+    })
   })
   it('throws on unknown arg', () => {
     try {
@@ -67,20 +68,14 @@ describe('handleArgParsing', () => {
     }
   })
   it('does not throw for required if alias is passed', () => {
-    try {
-      handleArgParsing({
-        options: [{
-          name: 'test',
-          type: 'boolean',
-          required: true,
-          aliases: ['t'],
-        }],
-      }, ['t'])
-    } catch (e) {
-      expect((e as Error).message).toEqual(
-        'Argument test is required',
-      )
-    }
+    expect(handleArgParsing({
+      options: [{
+        name: 'test',
+        type: 'boolean',
+        required: true,
+        aliases: ['t'],
+      }],
+    }, ['-t'])).toEqual({ parsed: { test: true, t: true }, positionals: [] })
   })
   it('throws if neither arg nor alias was passed', () => {
     try {
