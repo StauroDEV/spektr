@@ -114,6 +114,19 @@ describe('CLI', () => {
         returned: 'Default command',
       })
     })
+    it('default command without name is used if no command is passed', () => {
+      const cli = new CLI()
+
+      const actionSpy = spy(() => `Default command`)
+
+      cli.command(actionSpy, { default: true })
+
+      cli.handle([])
+
+      assertSpyCall(actionSpy, 0, {
+        returned: 'Default command',
+      })
+    })
     it('throws if command is not found', () => {
       const cli = new CLI()
 
