@@ -9,7 +9,6 @@ import {
   isAnonymousCommand,
   makeFullPath,
 } from './utils.ts'
-import c from 'https://esm.sh/v135/emoji-regex@8.0.0/denonext/emoji-regex.mjs'
 
 export class CLI {
   name?: string
