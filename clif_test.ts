@@ -182,7 +182,9 @@ describe('CLI', () => {
       cli.handle(['run', '--help'])
 
       assertSpyCall(consoleSpy, 1, {
-        args: [],
+        args: [
+          'Usage: run [args]\n    --speed, -s     speed in km/h \n',
+        ],
       })
     })
   })
