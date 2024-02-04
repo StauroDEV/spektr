@@ -1,6 +1,11 @@
 import { describe, it } from 'https://deno.land/std@0.212.0/testing/bdd.ts'
 import { expect } from 'https://deno.land/std@0.212.0/expect/mod.ts'
-import { findExactCommand, hasOptions, helpMessageForCommand } from './utils.ts'
+import {
+  findDeepestParent,
+  findExactCommand,
+  hasOptions,
+  helpMessageForCommand,
+} from './utils.ts'
 import { CLI } from './clif.ts'
 
 describe('hasOptions', () => {
@@ -98,5 +103,29 @@ describe('helpMessageForCommand', () => {
     const message = helpMessageForCommand(cli.commands[0])
 
     expect(message).toEqual('Usage: test [args]\n    --test, -t      \n')
+  })
+})
+
+describe('findDeepestParent', () => {
+  it('returns a cli if it has no parent', () => {
+    const cli = new CLI({ name: 'cli' })
+
+    expect(findDeepestParent(cli)).toEqual(cli)
+  })
+  it('returns a parent cli if it has a parent', () => {
+    const cli = new CLI({ name: 'cli' })
+
+    const child = cli.program('child')
+
+    expect(findDeepestParent(child)).toEqual(cli)
+  })
+  it('returns the deepest cli if it has multiple parents', () => {
+    const cli = new CLI({ name: 'cli' })
+
+    const child = cli.program('child')
+
+    const grandchild = child.program('grandchild')
+
+    expect(findDeepestParent(grandchild)).toEqual(cli)
   })
 })
