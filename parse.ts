@@ -47,7 +47,7 @@ export const handleArgParsing = <
   for (const opt of requiredOptions) {
     if (
       !parsedArgs.find((arg) =>
-        arg[0] === opt.name || (opt.aliases || []).includes(arg[0])
+        arg[0] === opt.name || opt.aliases.includes(arg[0])
       )
     ) {
       throw new Error(`Argument ${opt.name} is required`)
@@ -55,9 +55,7 @@ export const handleArgParsing = <
   }
 
   for (const [arg, value] of parsedArgs) {
-    const opt = options.find((x) =>
-      x.name === arg || (x.aliases || []).includes(arg)
-    )
+    const opt = options.find((x) => x.name === arg || x.aliases.includes(arg))
     const actualType = typeDetect(value)
     if (!opt) throw new Error(`Unknown argument: ${arg}`)
     if (actualType !== opt.type) {
