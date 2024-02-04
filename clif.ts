@@ -18,13 +18,21 @@ export class CLI {
   #defaultCommand?: Command
   programs: CLI[] = []
   #parseOptions?: ParseOptions
+  helpFn?: (cmd: Command) => string
   constructor(
-    opts: { name?: string; prefix?: string } & ParseOptions = {},
+    opts:
+      & { name?: string; prefix?: string; plugins?: ((cli: CLI) => void)[] }
+      & ParseOptions = {},
   ) {
-    const { name, prefix, ...parseOptions } = opts
+    const { name, prefix, plugins, ...parseOptions } = opts
     this.name = name
     this.prefix = prefix
     this.#parseOptions = parseOptions
+
+    // Apply all plugins
+    for (const plugin of plugins || []) {
+      plugin(this)
+    }
   }
   command<T extends readonly Option[] = readonly Option[]>(
     name: string,
@@ -91,11 +99,11 @@ export class CLI {
   #find(
     args: string[],
   ): Command[] {
-    return this.commands.filter((command) => {
-      if (args.length === 0) return command.name === ''
+    return this.commands.filter((cmd) => {
+      if (args.length === 0) return cmd.name === ''
       else {
-        return command.path.length !== 0 &&
-          command.path.every((item) => args.includes(item))
+        return cmd.path.length !== 0 &&
+          cmd.path.every((item) => args.includes(item))
       }
     })
   }
@@ -109,7 +117,12 @@ export class CLI {
           this.#parseOptions,
         )
 
-        return handleActionWithHelp(this.#defaultCommand, positionals, parsed)
+        return handleActionWithHelp({
+          cmd: this.#defaultCommand,
+          positionals,
+          options: parsed,
+          helpFn: this.helpFn,
+        })
       } else return console.log(this.createHelpMessage())
     }
 
@@ -137,11 +150,12 @@ export class CLI {
         this.#parseOptions,
       )
 
-      return handleActionWithHelp(
+      return handleActionWithHelp({
         cmd,
-        positionals.slice(cmd.path.length),
-        parsed,
-      )
+        positionals: positionals.slice(cmd.path.length),
+        options: parsed,
+        helpFn: this.helpFn,
+      })
     }
 
     const fullPath = makeFullPath(this)
@@ -164,11 +178,12 @@ export class CLI {
         this.#parseOptions,
       )
 
-      return handleActionWithHelp(
+      return handleActionWithHelp({
         cmd,
-        positionals.slice(cmd.path.length),
-        parsed,
-      )
+        positionals: positionals.slice(cmd.path.length),
+        options: parsed,
+        helpFn: this.helpFn,
+      })
     } else throw new Error('Command not found')
   }
   program(prefix: string, program = new CLI({ name: prefix, prefix })) {
@@ -225,8 +240,8 @@ export class CLI {
     }\n`
 
     const appendCommands = (commands: Command[]) => {
-      commands.forEach((command) => {
-        if (command.name) helpMessage += `  ${command.name}\n`
+      commands.forEach((cmd) => {
+        if (cmd.name) helpMessage += `  ${cmd.name}\n`
       })
     }
 
@@ -245,8 +260,8 @@ export class CLI {
     if (defaultCommands.length !== 0) {
       helpMessage += `\nOptions:\n`
       const layout: string[][] = []
-      defaultCommands.forEach((command) =>
-        command.options.forEach((option) => {
+      defaultCommands.forEach((cmd) =>
+        cmd.options.forEach((option) => {
           layout.push([
             [
               `--${option.name}`,

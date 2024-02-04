@@ -41,8 +41,8 @@ export const withColorPlugin = (cli: CLI) => {
     }\n`
 
     const appendCommands = (commands: Command[]) => {
-      commands.forEach((command) => {
-        if (command.name) helpMessage += `  ${command.name}\n`
+      commands.forEach((cmd) => {
+        if (cmd.name) helpMessage += `  ${cmd.name}\n`
       })
     }
 
@@ -63,8 +63,8 @@ export const withColorPlugin = (cli: CLI) => {
     if (defaultCommands.length !== 0) {
       helpMessage += `\n${colors.bold('Options')}:\n`
       const layout: string[][] = []
-      defaultCommands.forEach((command) =>
-        command.options.forEach((option) => {
+      defaultCommands.forEach((cmd) =>
+        cmd.options.forEach((option) => {
           layout.push([
             colors.cyan([
               `--${option.name}`,
@@ -85,6 +85,29 @@ export const withColorPlugin = (cli: CLI) => {
     }
 
     return helpMessage
+  }
+  cli.helpFn = (cmd: Command) => {
+    const layout: string[][] = []
+    let msg = `${colors.bold('Usage')}: ${cmd.name} [args]\n`
+    cmd.options.forEach((option) => {
+      layout.push([
+        colors.cyan([
+          `--${option.name}`,
+          ...((option.aliases || []).map((a) => `-${a}`)),
+        ].join(', ')),
+        option.description || '',
+      ])
+    })
+
+    msg += table(layout, {
+      border: getBorderCharacters('void'),
+      columnDefault: {
+        paddingLeft: 4,
+      },
+      drawHorizontalLine: () => false,
+    })
+
+    return msg
   }
 
   return cli

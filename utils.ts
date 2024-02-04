@@ -1,12 +1,6 @@
 import { getBorderCharacters, table } from 'https://esm.sh/table@6.8.1'
 import { CLI } from './clif.ts'
-import type {
-  Action,
-  Command,
-  Option,
-  ParsedOptions,
-  Positionals,
-} from './types.ts'
+import type { Command, Option, ParsedOptions, Positionals } from './types.ts'
 
 export const hasOptions = (args: Positionals): boolean =>
   !!args.find((arg) =>
@@ -55,10 +49,10 @@ export function findExactCommand(commands: Command[], args: string[]) {
 
 export const helpMessageForCommand = <
   T extends readonly Option[] = readonly Option[],
->(command: Command<T>) => {
+>(cmd: Command<T>) => {
   const layout: string[][] = []
-  let msg = `Usage: ${command.name} [args]\n`
-  command.options.forEach((option) => {
+  let msg = `Usage: ${cmd.name} [args]\n`
+  cmd.options.forEach((option) => {
     layout.push([
       [
         `--${option.name}`,
@@ -81,8 +75,15 @@ export const helpMessageForCommand = <
 
 export const handleActionWithHelp = <
   T extends readonly Option[] = readonly Option[],
->(command: Command<T>, positionals: Positionals, options: ParsedOptions<T>) => {
-  if (command.name !== '' && ('help' in options || 'h' in options)) {
-    return console.log(helpMessageForCommand(command))
-  } else return command.action(positionals, options)
+>(
+  { cmd, positionals, options, helpFn = helpMessageForCommand }: {
+    cmd: Command<T>
+    positionals: Positionals
+    options: ParsedOptions<T>
+    helpFn?: (cmd: Command<T>) => string
+  },
+) => {
+  if (cmd.name !== '' && ('help' in options || 'h' in options)) {
+    return console.log(helpFn(cmd))
+  } else return cmd.action(positionals, options)
 }

@@ -1,9 +1,7 @@
 import { CLI } from './clif.ts'
 import { withColorPlugin } from './plugins/color.ts'
 
-const cli = new CLI({ name: 'stauro' })
-
-withColorPlugin(cli)
+const cli = new CLI({ name: 'stauro', plugins: [withColorPlugin] })
 
 cli.command('hello', (_, args) => {
   args.name ? console.log(`Hello ${args.name}!`) : console.log('Hello!')
