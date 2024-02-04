@@ -73,6 +73,27 @@ describe('findExactCommand', () => {
     expect(command?.name).toEqual('test1')
   })
 
+  it('returns the first command with the same options if there are multiple commands and args', () => {
+    const commands: Command[] = [
+      {
+        name: 'test1',
+        path: ['test'],
+        action: () => {},
+        options: [{ name: 'opt1', aliases: ['o'], type: 'boolean' }],
+      },
+      {
+        name: 'test2',
+        path: ['test'],
+        action: () => {},
+        options: [{ name: 'opt1', aliases: ['o'], type: 'boolean' }],
+      },
+    ]
+
+    const command = findExactCommand(commands, ['test', '--opt1'])
+
+    expect(command?.name).toEqual('test1')
+  })
+
   it('returns undefined if there are no commands', () => {
     const commands: Command[] = []
     const args = ['--opt1']
