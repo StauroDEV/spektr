@@ -63,6 +63,24 @@ describe('findExactCommand', () => {
 
     expect(command?.options[0].name).toEqual('test')
   })
+  it('if there are no args, returns the one with longest path', () => {
+    const command = findExactCommand([
+      {
+        name: 'test',
+        path: ['test'],
+        action: () => {},
+        options: [],
+      },
+      {
+        name: 'test',
+        path: ['test1', 'test'],
+        action: () => {},
+        options: [],
+      },
+    ], [])
+
+    expect(command?.path).toEqual(['test1', 'test'])
+  })
 })
 
 describe('helpMessageForCommand', () => {
