@@ -187,6 +187,29 @@ describe('CLI', () => {
         ],
       })
     })
+    it('prints out help for defined programs', () => {
+      const cli = new CLI({ name: 'player' })
+
+      const run = cli.program('knight')
+
+      run.command('fight', () => 'Fight')
+
+      cli.help()
+
+      cli.handle(['--help'])
+
+      assertSpyCall(consoleSpy, 0, {
+        args: [
+          'Usage: player [command] [-h]\n' +
+          '\n' +
+          'Commands for player knight:\n' +
+          '  fight\n' +
+          '\n' +
+          'Options:\n' +
+          '    --help, -h     shows this message \n',
+        ],
+      })
+    })
   })
   describe('cli.version()', () => {
     const originalConsoleLog = console.log

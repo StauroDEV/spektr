@@ -36,7 +36,7 @@ export function findExactCommand(commands: Command[], args: string[]) {
     ? commands.find((c) =>
       c.options.find((o) =>
         args.find((arg) => arg.startsWith(`--${o.name}`)) ||
-        (o.aliases || []).find((a) =>
+        o.aliases.find((a) =>
           args.find((arg) =>
             arg.slice(0, 2) === `-${a}` &&
             (arg[2] === '' || arg[2] === undefined)
@@ -56,7 +56,7 @@ export const helpMessageForCommand = <
     layout.push([
       [
         `--${option.name}`,
-        ...((option.aliases || []).map((a) => `-${a}`)),
+        ...(option.aliases.map((a) => `-${a}`)),
       ].join(', '),
       option.description || '',
     ])

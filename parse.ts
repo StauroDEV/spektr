@@ -25,7 +25,7 @@ export const handleArgParsing = <
 
   const alias: Record<string, string[]> = options.reduce(
     (acc, option) => {
-      acc[option.name] = option.aliases as string[] || []
+      acc[option.name] = option.aliases as string[]
       return acc
     },
     {} as Record<string, string[]>,

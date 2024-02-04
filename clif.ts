@@ -265,7 +265,7 @@ export class CLI {
           layout.push([
             [
               `--${option.name}`,
-              ...((option.aliases || []).map((a) => `-${a}`)),
+              ...(option.aliases.map((a) => `-${a}`)),
             ].join(', '),
             option.description || '',
           ])

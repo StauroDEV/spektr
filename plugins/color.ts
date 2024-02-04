@@ -68,7 +68,7 @@ export const withColorPlugin = (cli: CLI) => {
           layout.push([
             colors.cyan([
               `--${option.name}`,
-              ...((option.aliases || []).map((a) => `-${a}`)),
+              ...(option.aliases.map((a) => `-${a}`)),
             ].join(', ')),
             colors.gray(option.description || ''),
           ])
@@ -93,7 +93,7 @@ export const withColorPlugin = (cli: CLI) => {
       layout.push([
         colors.cyan([
           `--${option.name}`,
-          ...((option.aliases || []).map((a) => `-${a}`)),
+          ...(option.aliases.map((a) => `-${a}`)),
         ].join(', ')),
         option.description || '',
       ])
