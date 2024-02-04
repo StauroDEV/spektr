@@ -62,13 +62,15 @@ export const helpMessageForCommand = <
     ])
   })
 
-  msg += table(layout, {
-    border: getBorderCharacters('void'),
-    columnDefault: {
-      paddingLeft: 4,
-    },
-    drawHorizontalLine: () => false,
-  })
+  if (layout.length !== 0) {
+    msg += table(layout, {
+      border: getBorderCharacters('void'),
+      columnDefault: {
+        paddingLeft: 4,
+      },
+      drawHorizontalLine: () => false,
+    })
+  }
 
   return msg
 }
