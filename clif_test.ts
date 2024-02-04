@@ -56,7 +56,7 @@ describe('CLI', () => {
 
       cli.command<typeof options>('test', actionSpy, { options })
 
-      cli.handle(['--value=str', 'test', 'pos'])
+      cli.handle(['test', 'pos', '--value=str'])
 
       assertSpyCall(actionSpy, 0, {
         args: [['pos'], { value: 'str', v: 'str' }],
@@ -196,7 +196,9 @@ describe('CLI', () => {
 
       assertSpyCall(consoleSpy, 1, {
         args: [
-          'Usage: run [args]\n    --speed, -s     speed in km/h \n',
+          'Usage: run [args]\n' +
+          '    --speed, -s     speed in km/h      \n' +
+          '    --help, -h      shows this message \n',
         ],
       })
     })

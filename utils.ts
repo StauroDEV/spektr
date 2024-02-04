@@ -32,19 +32,31 @@ export function findDeepestParent(cli: CLI): CLI {
 }
 
 export function findExactCommand(commands: Command[], args: string[]) {
-  return commands.length > 1 && hasOptions(args)
-    ? commands.find((c) =>
-      c.options.find((o) =>
-        args.find((arg) => arg.startsWith(`--${o.name}`)) ||
-        o.aliases.find((a) =>
-          args.find((arg) =>
-            arg.slice(0, 2) === `-${a}` &&
-            (arg[2] === '' || arg[2] === undefined)
-          )
-        )
+  // Split args into positionals and options
+  const positionals = args.filter((arg) => !arg.startsWith('-'))
+  const options = args.filter((arg) => arg.startsWith('-')).map((arg) =>
+    arg.split('=')[0]
+  )
+
+  // Filter commands that have the path present in args in the correct order
+  const pathMatchCommands = commands.filter((command) =>
+    command.path.every((pathPart, index) => positionals[index] === pathPart)
+  )
+
+  if (pathMatchCommands.length > 0) {
+    const optionMatchCommands = pathMatchCommands.filter((command) =>
+      command.options.some((option) =>
+        options.includes(`--${option.name}`) ||
+        option.aliases.some((alias) => options.includes(`-${alias}`))
       )
     )
-    : commands.sort((x, y) => y.path.length - x.path.length)[0]
+
+    if (optionMatchCommands.length > 0) return optionMatchCommands[0]
+
+    return pathMatchCommands[0]
+  }
+
+  return undefined
 }
 
 export const helpMessageForCommand = <

@@ -7,6 +7,7 @@ import {
   helpMessageForCommand,
 } from './utils.ts'
 import { CLI } from './clif.ts'
+import { Command } from './types.ts'
 
 describe('hasOptions', () => {
   it('detects regular args', () => {
@@ -30,59 +31,55 @@ describe('hasOptions', () => {
 })
 
 describe('findExactCommand', () => {
-  it('finds the more precise command if two with the same name are defined', () => {
-    const command = findExactCommand([
+  it('returns the command with the matching option if there are multiple commands and args', () => {
+    const commands: Command[] = [
       {
         name: 'test',
         path: ['test'],
         action: () => {},
-        options: [],
+        options: [{ name: 'opt1', aliases: ['o'], type: 'boolean' }],
       },
       {
-        name: 'test',
-        path: ['test1', 'test'],
+        name: 'test2',
+        path: ['test'],
         action: () => {},
-        options: [{ name: 'test', aliases: ['t'], type: 'boolean' }],
+        options: [{ name: 'opt2', aliases: ['e'], type: 'boolean' }],
       },
-    ], ['--test'])
+    ]
 
-    expect(command?.options[0].name).toEqual('test')
+    const command = findExactCommand(commands, ['test', '--opt2'])
+
+    expect(command?.name).toEqual('test2')
   })
-  it('finds the more precise command by alias if two with the same name are defined', () => {
-    const command = findExactCommand([
+
+  it('returns the command with the matching alias if there are multiple commands and args', () => {
+    const commands: Command[] = [
       {
-        name: 'test',
+        name: 'test1',
         path: ['test'],
         action: () => {},
-        options: [],
+        options: [{ name: 'opt1', aliases: ['o'], type: 'boolean' }],
       },
       {
-        name: 'test',
-        path: ['test1', 'test'],
+        name: 'test2',
+        path: ['test'],
         action: () => {},
-        options: [{ name: 'test', aliases: ['t'], type: 'boolean' }],
+        options: [{ name: 'opt2', aliases: ['e'], type: 'boolean' }],
       },
-    ], ['--test'])
+    ]
 
-    expect(command?.options[0].name).toEqual('test')
+    const command = findExactCommand(commands, ['test', '-o'])
+
+    expect(command?.name).toEqual('test1')
   })
-  it('if there are no args, returns the one with longest path', () => {
-    const command = findExactCommand([
-      {
-        name: 'test',
-        path: ['test'],
-        action: () => {},
-        options: [],
-      },
-      {
-        name: 'test',
-        path: ['test1', 'test'],
-        action: () => {},
-        options: [],
-      },
-    ], [])
 
-    expect(command?.path).toEqual(['test1', 'test'])
+  it('returns undefined if there are no commands', () => {
+    const commands: Command[] = []
+    const args = ['--opt1']
+
+    const command = findExactCommand(commands, args)
+
+    expect(command).toBeUndefined()
   })
 })
 
@@ -102,7 +99,7 @@ describe('helpMessageForCommand', () => {
     const message = helpMessageForCommand(cli.commands[0])
 
     expect(message).toEqual(
-      `Usage: test [args]\n    --test, -t     testing \n`,
+      `Usage: test [args]\n    --test, -t     testing            \n    --help, -h     shows this message \n`,
     )
   })
   it('outputs help message for a command with no options', () => {
@@ -112,7 +109,9 @@ describe('helpMessageForCommand', () => {
 
     const message = helpMessageForCommand(cli.commands[0])
 
-    expect(message).toEqual('Usage: test [args]\n')
+    expect(message).toEqual(
+      'Usage: test [args]\n    --help, -h     shows this message \n',
+    )
   })
   it('outputs help message for a command with no description', () => {
     const cli = new CLI({ name: 'cli' })
@@ -123,7 +122,10 @@ describe('helpMessageForCommand', () => {
 
     const message = helpMessageForCommand(cli.commands[0])
 
-    expect(message).toEqual('Usage: test [args]\n    --test, -t      \n')
+    expect(message).toEqual(
+      'Usage: test [args]\n' + '    --test, -t                        \n' +
+        '    --help, -h     shows this message \n',
+    )
   })
 })
 

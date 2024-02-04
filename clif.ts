@@ -9,6 +9,7 @@ import {
   isAnonymousCommand,
   makeFullPath,
 } from './utils.ts'
+import c from 'https://esm.sh/v135/emoji-regex@8.0.0/denonext/emoji-regex.mjs'
 
 export class CLI {
   name?: string
@@ -69,7 +70,12 @@ export class CLI {
         this,
         typeof nameOrAction === 'string' ? [nameOrAction] : undefined,
       ),
-      options,
+      options: options.find((x) => x.name === 'help') ? options : [...options, {
+        name: 'help',
+        aliases: ['h'],
+        description: 'shows this message',
+        type: 'boolean',
+      }] as unknown as T,
     }
 
     if (typeof nameOrAction === 'string') {
@@ -91,18 +97,6 @@ export class CLI {
     }
 
     return this
-  }
-
-  #find(
-    args: string[],
-  ): Command[] {
-    return this.commands.filter((cmd) => {
-      if (args.length === 0) return cmd.name === ''
-      else {
-        return cmd.path.length !== 0 &&
-          cmd.path.every((item) => args.includes(item))
-      }
-    })
   }
 
   handle(args = Deno.args): void {
@@ -134,8 +128,8 @@ export class CLI {
     ) {
       const cmd = findExactCommand(
         this.#defaultCommand
-          ? [...this.#find([]), this.#defaultCommand]
-          : this.#find([]),
+          ? [...this.commands, this.#defaultCommand]
+          : this.commands,
         args,
       )
 
@@ -157,18 +151,13 @@ export class CLI {
 
     const fullPath = makeFullPath(this)
 
-    const commands = this.#find([...fullPath, ...args])
+    const cmd = findExactCommand(this.commands, [...fullPath, ...args])
 
     const program = this.programs.find((program) => args[0] === program.prefix)
 
     if (program) {
       return program.handle(args.slice(1))
-    } else if (commands.length > 0) {
-      // In case of multiple commands under the same, look for the one who has same options
-      const cmd = findExactCommand(commands, args)
-
-      if (!cmd) throw new Error('Command not found')
-
+    } else if (cmd) {
       const { positionals, parsed } = handleArgParsing(
         cmd,
         args,
