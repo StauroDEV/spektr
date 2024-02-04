@@ -73,9 +73,6 @@ export class CLI {
     }
 
     if (typeof nameOrAction === 'string') {
-      if (typeof actionOrOptions !== 'function') {
-        throw new Error(`Command action for ${nameOrAction} is required`)
-      }
       const cmd = {
         name: nameOrAction,
         action: actionOrOptions,
