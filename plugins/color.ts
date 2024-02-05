@@ -19,9 +19,7 @@ export const withColorPlugin = (cli: CLI) => {
 
     const defaultCommandOptions = defaultCommands.map((cmd) => cmd.options).map(
       (options) =>
-        options.map((opt) =>
-          opt.aliases ? `-${opt.aliases[0]}` : `--${opt.name}`
-        ),
+        options.map((opt) => opt.short ? `-${opt.short}` : `--${opt.name}`),
     ).map((fmt) => `[${fmt}]`).join(' ')
 
     const getParentName = (cli: CLI | null): string => {
@@ -68,7 +66,7 @@ export const withColorPlugin = (cli: CLI) => {
           layout.push([
             colors.cyan([
               `--${option.name}`,
-              ...(option.aliases.map((a) => `-${a}`)),
+              `-${option.short}`,
             ].join(', ')),
             colors.gray(option.description || ''),
           ])
@@ -93,7 +91,7 @@ export const withColorPlugin = (cli: CLI) => {
       layout.push([
         colors.cyan([
           `--${option.name}`,
-          ...(option.aliases.map((a) => `-${a}`)),
+          `-${option.short}`,
         ].join(', ')),
         option.description || '',
       ])

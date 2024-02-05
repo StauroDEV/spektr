@@ -11,8 +11,9 @@ await build({
   shims: { deno: false },
   test: false,
   compilerOptions: {
-    lib: ['DOM'],
+    lib: ['DOM', 'ESNext'],
     target: 'Latest',
+    skipLibCheck: true,
   },
   package: {
     name: 'clif',
@@ -28,6 +29,18 @@ await build({
     },
     publishConfig: {
       access: 'public',
+    },
+    dependencies: {
+      'colorette': '2.0.20',
+    },
+    devDependencies: {
+      '@types/node': 'latest',
+    },
+  },
+  mappings: {
+    'https://deno.land/std@0.212.0/fmt/colors.ts': {
+      name: 'colorette',
+      version: '2.0.20',
     },
   },
   postBuild() {
