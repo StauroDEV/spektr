@@ -1,39 +1,30 @@
-import {
-  parseArgs,
-  ParseOptions,
-} from 'https://deno.land/std@0.212.0/cli/parse_args.ts'
 import typeDetect from 'https://deno.land/x/type_detect@v4.0.8/index.js'
 import { Option, ParsedOptions } from './types.ts'
+import { parseArgs, type ParseArgsConfig } from 'node:util'
 
 export const handleArgParsing = <
   T extends readonly Option[] = readonly Option[],
 >(
   { options }: { options: T },
   args: string[],
-  parseOptions?: ParseOptions,
+  parseOptions?: ParseArgsConfig,
 ): {
   positionals: (string | number)[]
   parsed: ParsedOptions<typeof options>
 } => {
-  // add help message for each command
-  options = [...options] as unknown as T
-
-  const alias: Record<string, string[]> = options.reduce(
-    (acc, option) => {
-      acc[option.name] = option.aliases as string[]
-      return acc
-    },
-    {} as Record<string, string[]>,
-  )
-
-  const { _: positionals, ...parsed } = parseArgs(
+  const { positionals, values: parsed } = parseArgs({
+    ...parseOptions,
     args,
-    {
-      alias,
-      boolean: true,
-      ...parseOptions,
-    },
-  )
+    options: options.reduce((acc, curr) => {
+      acc[curr.name] = {
+        type: curr.type,
+        ...(curr.short ? { short: curr.short } : {}),
+      }
+      return acc
+    }, {} as NonNullable<ParseArgsConfig['options']>),
+    allowPositionals: true,
+    strict: false,
+  })
 
   const requiredOptions = options.filter((opt) => opt.required)
 
@@ -41,16 +32,14 @@ export const handleArgParsing = <
 
   for (const opt of requiredOptions) {
     if (
-      !parsedArgs.find((arg) =>
-        arg[0] === opt.name || opt.aliases.includes(arg[0])
-      )
+      !parsedArgs.find((arg) => arg[0] === opt.name || arg[0] === opt.short)
     ) {
       throw new Error(`Argument ${opt.name} is required`)
     }
   }
 
   for (const [arg, value] of parsedArgs) {
-    const opt = options.find((x) => x.name === arg || x.aliases.includes(arg))
+    const opt = options.find((x) => x.name === arg || x.short === arg)
     const actualType = typeDetect(value)
     if (!opt) throw new Error(`Unknown argument: ${arg}`)
     if (actualType !== opt.type) {

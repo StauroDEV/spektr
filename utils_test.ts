@@ -13,7 +13,7 @@ describe('hasOptions', () => {
   it('detects regular args', () => {
     expect(hasOptions(['--test'])).toEqual(true)
   })
-  it('detects alias', () => {
+  it('detects short', () => {
     expect(hasOptions(['-t'])).toEqual(true)
   })
   it('detects arg with value', () => {
@@ -37,13 +37,13 @@ describe('findExactCommand', () => {
         name: 'test',
         path: ['test'],
         action: () => {},
-        options: [{ name: 'opt1', aliases: ['o'], type: 'boolean' }],
+        options: [{ name: 'opt1', short: 'o', type: 'boolean' }],
       },
       {
         name: 'test2',
         path: ['test'],
         action: () => {},
-        options: [{ name: 'opt2', aliases: ['e'], type: 'boolean' }],
+        options: [{ name: 'opt2', short: 'e', type: 'boolean' }],
       },
     ]
 
@@ -52,19 +52,19 @@ describe('findExactCommand', () => {
     expect(command?.name).toEqual('test2')
   })
 
-  it('returns the command with the matching alias if there are multiple commands and args', () => {
+  it('returns the command with the matching short if there are multiple commands and args', () => {
     const commands: Command[] = [
       {
         name: 'test1',
         path: ['test'],
         action: () => {},
-        options: [{ name: 'opt1', aliases: ['o'], type: 'boolean' }],
+        options: [{ name: 'opt1', short: 'o', type: 'boolean' }],
       },
       {
         name: 'test2',
         path: ['test'],
         action: () => {},
-        options: [{ name: 'opt2', aliases: ['e'], type: 'boolean' }],
+        options: [{ name: 'opt2', short: 'e', type: 'boolean' }],
       },
     ]
 
@@ -79,13 +79,13 @@ describe('findExactCommand', () => {
         name: 'test1',
         path: ['test'],
         action: () => {},
-        options: [{ name: 'opt1', aliases: ['o'], type: 'boolean' }],
+        options: [{ name: 'opt1', short: 'o', type: 'boolean' }],
       },
       {
         name: 'test2',
         path: ['test'],
         action: () => {},
-        options: [{ name: 'opt1', aliases: ['o'], type: 'boolean' }],
+        options: [{ name: 'opt1', short: 'o', type: 'boolean' }],
       },
     ]
 
@@ -111,7 +111,7 @@ describe('helpMessageForCommand', () => {
     cli.command('test', () => {}, {
       options: [{
         name: 'test',
-        aliases: ['t'],
+        short: 't',
         type: 'boolean',
         description: 'testing',
       }],
@@ -138,7 +138,7 @@ describe('helpMessageForCommand', () => {
     const cli = new CLI({ name: 'cli' })
 
     cli.command('test', () => {}, {
-      options: [{ name: 'test', type: 'boolean', aliases: ['t'] }],
+      options: [{ name: 'test', type: 'boolean', short: 't' }],
     })
 
     const message = helpMessageForCommand(cli.commands[0])

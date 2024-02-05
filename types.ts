@@ -1,10 +1,10 @@
 type OptionType = boolean | string | number
 
 type Option = {
-  aliases: readonly string[]
+  short?: string
   name: string
   description?: string
-  type: 'boolean' | 'string' | 'number'
+  type: 'string' | 'boolean'
   required?: boolean
 }
 
@@ -16,7 +16,7 @@ type TypeConverter<T extends string> = T extends 'string' ? string
   : never
 
 type ParsedOptions<T extends readonly Option[]> = {
-  [K in T[number] as K['name'] | K['aliases'][number]]: TypeConverter<K['type']>
+  [K in T[number] as K['name']]: TypeConverter<K['type']>
 }
 
 type Action<

@@ -44,7 +44,7 @@ describe('CLI', () => {
 
       const options = [{
         name: 'value',
-        aliases: ['v'],
+        short: 'v',
         type: 'string',
       }] as const
 
@@ -59,8 +59,8 @@ describe('CLI', () => {
       cli.handle(['test', 'pos', '--value=str'])
 
       assertSpyCall(actionSpy, 0, {
-        args: [['pos'], { value: 'str', v: 'str' }],
-        returned: 'pos: {"value":"str","v":"str"}',
+        args: [['pos'], { value: 'str' }],
+        returned: 'pos: {"value":"str"}',
       })
     })
     it('basic nesting works', () => {
@@ -170,8 +170,8 @@ describe('CLI', () => {
       cli.command('run', () => 'Run', {
         options: [{
           name: 'speed',
-          aliases: ['s'],
-          type: 'number',
+          short: 's',
+          type: 'string',
           description: 'speed in km/h',
         }],
       })

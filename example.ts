@@ -7,7 +7,7 @@ cli.command('hello', (_, args) => {
   args.name ? console.log(`Hello ${args.name}!`) : console.log('Hello!')
 }, {
   options: [
-    { name: 'name', description: 'your name', type: 'string', aliases: ['n'] },
+    { name: 'name', description: 'your name', type: 'string', short: 'n' },
   ] as const,
 })
 
@@ -19,4 +19,4 @@ cli.version()
 
 cli.help()
 
-cli.handle()
+cli.handle(Deno.args)

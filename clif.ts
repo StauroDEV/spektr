@@ -1,4 +1,4 @@
-import { type ParseOptions } from 'https://deno.land/std@0.212.0/cli/parse_args.ts'
+import { type ParseArgsConfig } from 'node:util'
 import { getBorderCharacters, table } from 'https://esm.sh/table@6.8.1'
 import { Action, Command, Option } from './types.ts'
 import { handleArgParsing } from './parse.ts'
@@ -17,12 +17,12 @@ export class CLI {
   commands: Command[] = []
   #defaultCommand?: Command
   programs: CLI[] = []
-  #parseOptions?: ParseOptions
+  #parseOptions?: ParseArgsConfig
   helpFn?: (cmd: Command) => string
   constructor(
     opts:
       & { name?: string; prefix?: string; plugins?: ((cli: CLI) => void)[] }
-      & ParseOptions = {},
+      & ParseArgsConfig = {},
   ) {
     const { name, prefix, plugins, ...parseOptions } = opts
     this.name = name
@@ -71,7 +71,7 @@ export class CLI {
       ),
       options: options.find((x) => x.name === 'help') ? options : [...options, {
         name: 'help',
-        aliases: ['h'],
+        short: 'h',
         description: 'shows this message',
         type: 'boolean',
       }] as unknown as T,
@@ -98,7 +98,7 @@ export class CLI {
     return this
   }
 
-  handle(args = Deno.args): void {
+  handle(args: string[]): void {
     if (args.length === 0 && !this.prefix) {
       if (this.#defaultCommand) {
         const { positionals, parsed } = handleArgParsing(
@@ -194,7 +194,7 @@ export class CLI {
     }, {
       options: [{
         name: 'version',
-        aliases: ['v'],
+        short: 'v',
         type: 'boolean',
         description: 'shows current version',
       }],
@@ -205,9 +205,7 @@ export class CLI {
 
     const defaultCommandOptions = defaultCommands.map((cmd) => cmd.options).map(
       (options) =>
-        options.map((opt) =>
-          opt.aliases ? `-${opt.aliases[0]}` : `--${opt.name}`
-        ),
+        options.map((opt) => opt.short ? `-${opt.short}` : `--${opt.name}`),
     ).map((fmt) => `[${fmt}]`).join(' ')
 
     const getParentName = (cli: CLI | null): string => {
@@ -250,7 +248,7 @@ export class CLI {
           layout.push([
             [
               `--${option.name}`,
-              ...(option.aliases.map((a) => `-${a}`)),
+              `-${option.short}`,
             ].join(', '),
             option.description || '',
           ])
@@ -274,7 +272,7 @@ export class CLI {
     }, {
       options: [{
         name: 'help',
-        aliases: ['h'],
+        short: 'h',
         type: 'boolean',
         description: 'shows this message',
       }],

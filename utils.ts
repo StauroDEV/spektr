@@ -47,7 +47,7 @@ export function findExactCommand(commands: Command[], args: string[]) {
     const optionMatchCommands = pathMatchCommands.filter((command) =>
       command.options.some((option) =>
         options.includes(`--${option.name}`) ||
-        option.aliases.some((alias) => options.includes(`-${alias}`))
+        options.includes(`-${option.short}`)
       )
     )
 
@@ -68,7 +68,7 @@ export const helpMessageForCommand = <
     layout.push([
       [
         `--${option.name}`,
-        ...(option.aliases.map((a) => `-${a}`)),
+        `-${option.short}`,
       ].join(', '),
       option.description || '',
     ])

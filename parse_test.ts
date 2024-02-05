@@ -9,7 +9,6 @@ describe('handleArgParsing', () => {
         {
           name: 'test',
           type: 'string',
-          aliases: [],
         },
       ],
     }, ['pos1', '--test=val', 'pos2'])).toEqual({
@@ -23,11 +22,11 @@ describe('handleArgParsing', () => {
         {
           name: 'test',
           type: 'string',
-          aliases: ['t'],
+          short: 't',
         },
       ],
-    }, ['-t=val'])).toEqual({
-      parsed: { test: 'val', t: 'val' },
+    }, ['-t', 'val'])).toEqual({
+      parsed: { test: 'val' },
       positionals: [],
     })
   })
@@ -43,8 +42,8 @@ describe('handleArgParsing', () => {
   it('throws on invalid arg type', () => {
     try {
       handleArgParsing({
-        options: [{ name: 'test', type: 'boolean', aliases: [] }],
-      }, ['--test=val'])
+        options: [{ name: 'test', type: 'boolean' }],
+      }, ['--test', 'val'])
     } catch (e) {
       expect((e as Error).message).toEqual(
         'Invalid argument type for test: expected boolean, got string',
@@ -58,7 +57,6 @@ describe('handleArgParsing', () => {
           name: 'test',
           type: 'boolean',
           required: true,
-          aliases: [],
         }],
       }, [])
     } catch (e) {
@@ -67,24 +65,24 @@ describe('handleArgParsing', () => {
       )
     }
   })
-  it('does not throw for required if alias is passed', () => {
+  it('does not throw for required if short is passed', () => {
     expect(handleArgParsing({
       options: [{
         name: 'test',
         type: 'boolean',
         required: true,
-        aliases: ['t'],
+        short: 't',
       }],
-    }, ['-t'])).toEqual({ parsed: { test: true, t: true }, positionals: [] })
+    }, ['-t'])).toEqual({ parsed: { test: true }, positionals: [] })
   })
-  it('throws if neither arg nor alias was passed', () => {
+  it('throws if neither arg nor short was passed', () => {
     try {
       handleArgParsing({
         options: [{
           name: 'test',
           type: 'boolean',
           required: true,
-          aliases: ['t'],
+          short: 't',
         }],
       }, [])
     } catch (e) {
