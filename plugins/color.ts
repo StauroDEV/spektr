@@ -1,5 +1,5 @@
 import * as colors from 'https://deno.land/std@0.212.0/fmt/colors.ts'
-import { CLI } from '../clif.ts'
+import { CLI } from '../spektr.ts'
 import { getBorderCharacters, table } from 'https://esm.sh/table@6.8.1'
 import { Command } from '../types.ts'
 
@@ -12,7 +12,7 @@ export const withColorPlugin = (cli: CLI) => {
     const colorFn = colors[customColor] as (str: string) => string
     return cli.name
       ? `${colorFn(cli.name)}: ${version}${misc}`
-      : `${colorFn('Clif')}: ${version}${misc}`
+      : `${colorFn('Spektr')}: ${version}${misc}`
   }
   cli.createHelpMessage = () => {
     const defaultCommands = cli.commands.filter((cmd) => cmd.name === '')

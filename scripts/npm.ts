@@ -5,7 +5,7 @@ await emptyDir('./npm')
 
 await build({
   packageManager: 'pnpm',
-  entryPoints: ['./clif.ts', './plugins/color.ts'],
+  entryPoints: ['./spektr.ts', './plugins/color.ts'],
   outDir: './npm',
   scriptModule: false,
   shims: { deno: false },
@@ -16,16 +16,16 @@ await build({
     skipLibCheck: true,
   },
   package: {
-    name: 'clif',
+    name: 'spektr',
     version: Deno.args[0],
     description: 'Elegant CLI framework.',
     license: 'Apache-2.0',
     repository: {
       type: 'git',
-      url: 'git+https://github.com/stauroDEV/clif.git',
+      url: 'git+https://github.com/stauroDEV/spektr.git',
     },
     bugs: {
-      url: 'https://github.com/stauroDEV/clif/issues',
+      url: 'https://github.com/stauroDEV/spektr/issues',
     },
     publishConfig: {
       access: 'public',
@@ -38,7 +38,7 @@ await build({
     },
   },
   mappings: {
-    'https://deno.land/std@0.212.0/fmt/colors.ts': {
+    'https://deno.land/std@0.220.1/fmt/colors.ts': {
       name: 'colorette',
       version: '2.0.20',
     },

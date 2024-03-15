@@ -1,5 +1,5 @@
 import { getBorderCharacters, table } from 'https://esm.sh/table@6.8.1'
-import { CLI } from './clif.ts'
+import { CLI } from './spektr.ts'
 import type { Command, Option, ParsedOptions, Positionals } from './types.ts'
 
 export const hasOptions = (args: Positionals): boolean =>

@@ -183,7 +183,7 @@ export class CLI {
   ) {
     return this.name
       ? `${this.name}: ${version}${misc}`
-      : `Clif: ${version}${misc}`
+      : `Spektr: ${version}${misc}`
   }
   version(version = '0.0.0', misc = '') {
     this.command(() => {

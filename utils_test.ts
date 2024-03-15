@@ -6,7 +6,7 @@ import {
   hasOptions,
   helpMessageForCommand,
 } from './utils.ts'
-import { CLI } from './clif.ts'
+import { CLI } from './spektr.ts'
 import { Command } from './types.ts'
 
 describe('hasOptions', () => {

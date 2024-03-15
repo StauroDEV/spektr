@@ -1,4 +1,4 @@
-import { CLI } from './clif.ts'
+import { CLI } from './spektr.ts'
 import { withColorPlugin } from './plugins/color.ts'
 
 const cli = new CLI({ name: 'stauro', plugins: [withColorPlugin] })

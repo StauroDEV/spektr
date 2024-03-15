@@ -10,7 +10,7 @@ import {
   Spy,
   spy,
 } from 'https://deno.land/std@0.220.1/testing/mock.ts'
-import { CLI } from './clif.ts'
+import { CLI } from './spektr.ts'
 import { Positionals } from './types.ts'
 import { ParsedOptions } from './types.ts'
 
@@ -245,14 +245,14 @@ describe('CLI', () => {
 
       assertSpyCall(consoleSpy, 0, { args: ['cli: 0.0.0'] })
     })
-    it('name is Clif by default', () => {
+    it('name is Spektr by default', () => {
       const cli = new CLI({})
 
       cli.version()
 
       cli.handle(['--version'])
 
-      assertSpyCall(consoleSpy, 0, { args: ['Clif: 0.0.0'] })
+      assertSpyCall(consoleSpy, 0, { args: ['Spektr: 0.0.0'] })
     })
     it('subcommand version() invokes its root parent version', () => {
       const cli = new CLI({ name: 'root' })

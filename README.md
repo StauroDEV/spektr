@@ -14,10 +14,10 @@ Elegant CLI framework. Works with Deno, Node.js and Bun.
 ## Example
 
 ```ts
-import { Clif } from 'https://deno.land/x/spektr/spektr.ts'
+import { CLI } from 'https://deno.land/x/spektr/spektr.ts'
 import { withColorPlugin } from 'https://deno.land/x/spektr/plugins/color.ts'
 
-const cli = new CLI({ name: 'clif', plugins: [withColorPlugin] })
+const cli = new CLI({ name: 'spektr', plugins: [withColorPlugin] })
 
 cli.command('hello', (_, args) => {
   args.name ? console.log(`Hello ${args.name}!`) : console.log('Hello!')
