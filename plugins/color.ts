@@ -1,4 +1,4 @@
-import * as colors from 'https://deno.land/std@0.212.0/fmt/colors.ts'
+import * as colors from 'https://deno.land/std@0.220.1/fmt/colors.ts'
 import { CLI } from '../spektr.ts'
 import { getBorderCharacters, table } from 'https://esm.sh/table@6.8.1'
 import { Command } from '../types.ts'
