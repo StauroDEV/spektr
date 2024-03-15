@@ -42,6 +42,10 @@ await build({
       name: 'colorette',
       version: '2.0.20',
     },
+    'https://deno.land/x/type_detect@v4.0.8/index.js': {
+      name: 'type-detect',
+      version: '4.0.8',
+    },
   },
   postBuild() {
     // steps to run after building and before running the tests
