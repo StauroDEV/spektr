@@ -1,4 +1,4 @@
-# Clif
+# Spektr
 
 Elegant CLI framework. Works with Deno, Node.js and Bun.
 
@@ -14,8 +14,8 @@ Elegant CLI framework. Works with Deno, Node.js and Bun.
 ## Example
 
 ```ts
-import { Clif } from 'https://deno.land/x/clif/clif.ts'
-import { withColorPlugin } from 'https://deno.land/x/clif/plugins/color.ts'
+import { Clif } from 'https://deno.land/x/spektr/spektr.ts'
+import { withColorPlugin } from 'https://deno.land/x/spektr/plugins/color.ts'
 
 const cli = new CLI({ name: 'clif', plugins: [withColorPlugin] })
 
