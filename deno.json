@@ -1,6 +1,7 @@
 {
   "fmt": {
     "semiColons": false,
-    "singleQuote": true
+    "singleQuote": true,
+    "exclude": ["npm", "coverage"]
   }
 }
