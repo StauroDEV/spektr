@@ -13,7 +13,7 @@ cli.command('hello', (_, args) => {
 
 const pg = cli.program('pg')
 
-pg.version()
+pg.version('1.2.3')
 
 cli.version()
 

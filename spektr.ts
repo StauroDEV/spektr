@@ -74,12 +74,17 @@ export class CLI {
       ? actionOrOptions.default
       : params?.default
 
+    const hasHelpOrVersion = typeof nameOrAction !== 'string' &&
+      (
+        Boolean(options.find((x) => x.name === 'version' || x.name === 'help'))
+      )
+
     const common: { path: string[]; options: T } = {
       path: makeFullPath(
         this,
         typeof nameOrAction === 'string' ? [nameOrAction] : undefined,
       ),
-      options: options.find((x) => x.name === 'help') ? options : [...options, {
+      options: hasHelpOrVersion ? options : [...options, {
         name: 'help',
         short: 'h',
         description: 'shows this message',
