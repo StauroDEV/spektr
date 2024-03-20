@@ -11,10 +11,14 @@ import {
 } from './utils.ts'
 
 /**
- * Skeptr entrypoint class.
+ * Skeptr CLI app class.
  */
 export class CLI {
+  /** CLI name */
   name?: string
+  /**
+   * CLI Prefix, for example `auth`
+   */
   prefix?: string
   parent?: CLI
   commands: Command[] = []
@@ -24,7 +28,11 @@ export class CLI {
   helpFn?: (cmd: Command) => string
   constructor(
     opts:
-      & { name?: string; prefix?: string; plugins?: ((cli: CLI) => void)[] }
+      & {
+        name?: string
+        prefix?: string
+        plugins?: ((cli: CLI) => void)[]
+      }
       & ParseArgsConfig = {},
   ) {
     const { name, prefix, plugins, ...parseOptions } = opts
@@ -32,10 +40,7 @@ export class CLI {
     this.prefix = prefix
     this.#parseOptions = parseOptions
 
-    // Apply all plugins
-    for (const plugin of plugins || []) {
-      plugin(this)
-    }
+    for (const plugin of plugins || []) plugin(this)
   }
   command<T extends readonly Option[] = readonly Option[]>(
     name: string,
@@ -113,6 +118,10 @@ export class CLI {
     return this
   }
 
+  /**
+   * Handle commands with the given arguments. For Deno use `Deno.args`, for Node.js and Bun use `process.argv`
+   * @param args
+   */
   handle(args: string[]): void {
     if (args.length === 0 && !this.prefix) {
       if (this.#defaultCommand) {
@@ -186,6 +195,11 @@ export class CLI {
       })
     } else throw new Error('Command not found')
   }
+  /**
+   * Create a program, aka sub-command. It will handle all commands starting with a specified prefix
+   * @param prefix command prefix, for example `auth`
+   * @param program "program" (CLI app) instance that will handle on a specified prefix (optional)
+   */
   program(prefix: string, program = new CLI({ name: prefix, prefix })) {
     program.prefix = prefix
     program.parent = this
@@ -201,7 +215,7 @@ export class CLI {
       : `Spektr: ${version}${misc}`
   }
   /**
-   * Display a version when calling `--version`
+   * Display a version when invoking `--version`
    * @param version version string
    * @param misc additional information
    */
