@@ -35,27 +35,27 @@ echo `export { CLI } from 'https://deno.land/x/spektr/mod.ts'` >> deps.ts
 ## Example
 
 ```ts
-import { CLI, withColorPlugin } from "https://deno.land/x/spektr/mod.ts";
+import { CLI, withColorPlugin } from 'https://deno.land/x/spektr/mod.ts'
 
-const cli = new CLI({ name: "spektr", plugins: [withColorPlugin] });
+const cli = new CLI({ name: 'spektr', plugins: [withColorPlugin] })
 
 cli.command(
-  "hello",
+  'hello',
   (_, args) => {
-    args.name ? console.log(`Hello ${args.name}!`) : console.log("Hello!");
+    args.name ? console.log(`Hello ${args.name}!`) : console.log('Hello!')
   },
   {
     options: [
-      { name: "name", description: "your name", type: "string", short: ["n"] },
+      { name: 'name', description: 'your name', type: 'string', short: ['n'] },
     ] as const,
-  }
-);
+  },
+)
 
-cli.version();
+cli.version()
 
-cli.help();
+cli.help()
 
-cli.handle(Deno.args);
+cli.handle(Deno.args)
 ```
 
 [site-url]: https://deno.land/x/spektr?doc
