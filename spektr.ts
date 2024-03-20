@@ -10,6 +10,9 @@ import {
   makeFullPath,
 } from './utils.ts'
 
+/**
+ * Skeptr entrypoint class.
+ */
 export class CLI {
   name?: string
   prefix?: string
@@ -50,6 +53,13 @@ export class CLI {
     params?: { readonly options?: T; default?: boolean },
   ): CLI
 
+  /**
+   * Define a command for a CLI app.
+   * @param nameOrAction command name or command action
+   * @param actionOrOptions command action or command options list
+   * @param params options and additional params
+   * @returns the CLI app instance
+   */
   command<T extends readonly Option[] = readonly Option[]>(
     nameOrAction: string | Action<T>,
     actionOrOptions?: Action<T> | { readonly options?: T; default?: boolean },
@@ -185,6 +195,11 @@ export class CLI {
       ? `${this.name}: ${version}${misc}`
       : `Spektr: ${version}${misc}`
   }
+  /**
+   * Display a version when calling `--version`
+   * @param version version string
+   * @param misc additional information
+   */
   version(version = '0.0.0', misc = '') {
     this.command(() => {
       const parent = findDeepestParent(this)
@@ -266,6 +281,9 @@ export class CLI {
 
     return helpMessage
   }
+  /**
+   * Add a help command when invoking `--help`
+   */
   help() {
     this.command(() => {
       console.log(this.createHelpMessage())
