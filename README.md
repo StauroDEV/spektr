@@ -29,7 +29,7 @@ bun i spektr
 # pnpm
 pnpm i spektr
 # Deno
-echo `export { CLI } from 'https://deno.land/x/spektr/mod.ts'` >> deps.ts
+echo "export { CLI } from 'https://deno.land/x/spektr/mod.ts'" >> deps.ts
 ```
 
 ## Example
