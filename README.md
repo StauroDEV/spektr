@@ -9,7 +9,8 @@ Status][gh-actions-img]][github-actions]
 
 </div>
 
-Elegant CLI framework. Inspired by [cac](https://github.com/cacjs/cac). Works with Deno, Node.js and Bun.
+Elegant CLI framework. Inspired by [cac](https://github.com/cacjs/cac). Works
+with Deno, Node.js and Bun.
 
 ## Features
 
@@ -34,28 +35,28 @@ echo `export { CLI } from 'https://deno.land/x/spektr/spektr.ts'` >> deps.ts
 ## Example
 
 ```ts
-import { CLI } from "https://deno.land/x/spektr/spektr.ts";
-import { withColorPlugin } from "https://deno.land/x/spektr/plugins/color.ts";
+import { CLI } from 'https://deno.land/x/spektr/spektr.ts'
+import { withColorPlugin } from 'https://deno.land/x/spektr/plugins/color.ts'
 
-const cli = new CLI({ name: "spektr", plugins: [withColorPlugin] });
+const cli = new CLI({ name: 'spektr', plugins: [withColorPlugin] })
 
 cli.command(
-  "hello",
+  'hello',
   (_, args) => {
-    args.name ? console.log(`Hello ${args.name}!`) : console.log("Hello!");
+    args.name ? console.log(`Hello ${args.name}!`) : console.log('Hello!')
   },
   {
     options: [
-      { name: "name", description: "your name", type: "string", short: ["n"] },
+      { name: 'name', description: 'your name', type: 'string', short: ['n'] },
     ] as const,
-  }
-);
+  },
+)
 
-cli.version();
+cli.version()
 
-cli.help();
+cli.help()
 
-cli.handle(Deno.args);
+cli.handle(Deno.args)
 ```
 
 [site-url]: https://deno.land/x/spektr@0.0.0-alpha.3?doc
