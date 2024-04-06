@@ -10,6 +10,8 @@ import {
   makeFullPath,
 } from './utils.ts'
 
+type Params<T> = { readonly options?: T; default?: boolean }
+
 /**
  * Skeptr CLI app class.
  */
@@ -45,18 +47,18 @@ export class CLI {
   command<T extends readonly Option[] = readonly Option[]>(
     name: string,
     action: Action<T>,
-    params?: { readonly options?: T; default?: boolean },
-  ): CLI
+    params?: Params<T>,
+  ): Command
 
   command<T extends readonly Option[] = readonly Option[]>(
     name: string,
     action: Action<T>,
-  ): CLI
+  ): Command
 
   command<T extends readonly Option[] = readonly Option[]>(
     action: Action<T>,
-    params?: { readonly options?: T; default?: boolean },
-  ): CLI
+    params?: Params<T>,
+  ): Command
 
   /**
    * Define a command for a CLI app.
@@ -67,9 +69,9 @@ export class CLI {
    */
   command<T extends readonly Option[] = readonly Option[]>(
     nameOrAction: string | Action<T>,
-    actionOrOptions?: Action<T> | { readonly options?: T; default?: boolean },
-    params?: { readonly options?: T; default?: boolean },
-  ): CLI {
+    actionOrOptions?: Action<T> | Params<T>,
+    params?: Params<T>,
+  ): Command {
     const options =
       (actionOrOptions && 'options' in actionOrOptions
         ? actionOrOptions.options
@@ -84,7 +86,7 @@ export class CLI {
         Boolean(options.find((x) => x.name === 'version' || x.name === 'help'))
       )
 
-    const common: { path: string[]; options: T } = {
+    const common: { path: string[]; options: T; _builtin: boolean } = {
       path: makeFullPath(
         this,
         typeof nameOrAction === 'string' ? [nameOrAction] : undefined,
@@ -95,27 +97,24 @@ export class CLI {
         description: 'shows this message',
         type: 'boolean',
       }] as unknown as T,
+      _builtin: typeof nameOrAction !== 'string' && hasHelpOrVersion,
     }
 
-    if (typeof nameOrAction === 'string') {
-      const cmd = {
+    const cmd = typeof nameOrAction === 'string'
+      ? {
         name: nameOrAction,
-        action: actionOrOptions,
+        action: actionOrOptions as Action<T>,
         ...common,
-      } as Command<T>
-      if (isDefault) this.#defaultCommand = cmd
-      else this.commands.push(cmd)
-    } else {
-      const cmd = {
+      }
+      : {
         name: '',
         action: nameOrAction,
         ...common,
-      } as Command<T>
-      if (isDefault) this.#defaultCommand = cmd
-      else this.commands.push(cmd)
-    }
+      }
+    if (isDefault) this.#defaultCommand = cmd
+    else this.commands.push(cmd)
 
-    return this
+    return cmd
   }
 
   /**
@@ -172,7 +171,7 @@ export class CLI {
       })
     }
 
-    const fullPath = makeFullPath(this)
+    const fullPath = makeFullPath(this, args)
 
     const cmd = findExactCommand(this.commands, [...fullPath, ...args])
 

@@ -53,7 +53,7 @@ export function findExactCommand(commands: Command[], args: string[]) {
 
     if (optionMatchCommands.length > 0) return optionMatchCommands[0]
 
-    return pathMatchCommands[0]
+    if (!pathMatchCommands[0]._builtin) return pathMatchCommands[0]
   }
 
   return undefined

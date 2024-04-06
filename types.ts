@@ -31,6 +31,7 @@ type Command<T extends readonly Option[] = readonly Option[]> = {
   name: string
   action: Action<T>
   options: T
+  _builtin?: boolean
 }
 
 export type { Action, Command, Option, OptionType, ParsedOptions, Positionals }
