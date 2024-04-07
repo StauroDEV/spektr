@@ -13,9 +13,6 @@ export const isAnonymousCommand = (args: string[], names: string[]) => {
 }
 
 export function makeFullPath(cli: CLI, path: string[] = []): string[] {
-  if (cli.prefix !== undefined) {
-    path.unshift(cli.prefix)
-  }
   if (cli.parent) {
     return makeFullPath(cli.parent, path)
   } else {
