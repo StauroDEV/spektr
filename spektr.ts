@@ -89,6 +89,7 @@ export class CLI {
       options: T
       _builtin: boolean
       description?: string
+      default?: boolean
     } = {
       path: makeFullPath(
         this,
@@ -102,6 +103,7 @@ export class CLI {
       }] as unknown as T,
       _builtin: typeof nameOrAction !== 'string' && hasHelpOrVersion,
       description: params?.description,
+      default: isDefault,
     }
 
     const cmd = typeof nameOrAction === 'string'
@@ -116,7 +118,7 @@ export class CLI {
         ...common,
       }
     if (isDefault) this.#defaultCommand = cmd
-    else this.commands.push(cmd)
+    this.commands.push(cmd)
 
     return cmd
   }
@@ -126,7 +128,7 @@ export class CLI {
    * @param args
    */
   handle(args: string[]): void {
-    if (args.length === 0 && !this.prefix) {
+    if (args.length === 0) {
       if (this.#defaultCommand) {
         const { positionals, parsed } = handleArgParsing(
           this.#defaultCommand,
@@ -181,6 +183,8 @@ export class CLI {
 
     const program = this.programs.find((program) => args[0] === program.prefix)
 
+    const defaultCommand = this.commands.find((c) => c.default)
+
     if (program) {
       return program.handle(args.slice(1))
     } else if (cmd) {
@@ -193,6 +197,18 @@ export class CLI {
       return handleActionWithHelp({
         cmd,
         positionals: positionals.slice(cmd.path.length),
+        options: parsed,
+        helpFn: this.helpFn,
+      })
+    } else if (defaultCommand) {
+      const { positionals, parsed } = handleArgParsing(
+        defaultCommand,
+        args,
+        this.#parseOptions,
+      )
+      return handleActionWithHelp({
+        cmd: defaultCommand,
+        positionals: positionals.slice(defaultCommand.path.length),
         options: parsed,
         helpFn: this.helpFn,
       })
@@ -264,13 +280,15 @@ export class CLI {
       commands.forEach((cmd) => {
         if (cmd.name) layout.push([cmd.name, cmd.description || ''])
       })
-      helpMessage += table(layout, {
-        border: getBorderCharacters('void'),
-        columnDefault: {
-          paddingLeft: 4,
-        },
-        drawHorizontalLine: () => false,
-      })
+      if (layout.length) {
+        helpMessage += table(layout, {
+          border: getBorderCharacters('void'),
+          columnDefault: {
+            paddingLeft: 4,
+          },
+          drawHorizontalLine: () => false,
+        })
+      }
     }
 
     appendCommands(this.commands)

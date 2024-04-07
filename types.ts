@@ -33,6 +33,7 @@ type Command<T extends readonly Option[] = readonly Option[]> = {
   options: T
   _builtin?: boolean
   description?: string
+  default?: boolean
 }
 
 type Params<T> = {

@@ -161,7 +161,7 @@ describe('CLI', () => {
       cli.handle([])
 
       assertSpyCall(consoleSpy, 0, {
-        args: ['Usage:  [command] \n\nCommands:\n  test\n'],
+        args: ['Usage:  [command] \n\nCommands:\n    test      \n'],
       })
     })
     it('prints out help for defined commands', () => {
@@ -185,7 +185,7 @@ describe('CLI', () => {
           'Usage: player [command] [-h]\n' +
           '\n' +
           'Commands:\n' +
-          '  run\n' +
+          '    run      \n' +
           '\n' +
           'Options:\n' +
           '    --help, -h     shows this message \n',
@@ -218,7 +218,7 @@ describe('CLI', () => {
           'Usage: player [command] [-h]\n' +
           '\n' +
           'Commands for player knight:\n' +
-          '  fight\n' +
+          '    fight      \n' +
           '\n' +
           'Options:\n' +
           '    --help, -h     shows this message \n',
