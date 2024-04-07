@@ -9,6 +9,7 @@ import {
   makeFullPath,
 } from './utils.ts'
 import { getBorderCharacters, table } from './deps.ts'
+import { Plugin } from './types.ts'
 
 /**
  * Skeptr CLI app class.
@@ -26,21 +27,27 @@ export class CLI {
   programs: CLI[] = []
   #parseOptions?: ParseArgsConfig
   helpFn?: (cmd: Command) => string
+  plugins: Plugin[] = []
   constructor(
     opts:
       & {
         name?: string
         prefix?: string
-        plugins?: ((cli: CLI) => void)[]
+        plugins?: Plugin[]
+        helpFn?: (cmd: Command) => string
       }
       & ParseArgsConfig = {},
   ) {
-    const { name, prefix, plugins, ...parseOptions } = opts
+    const { name, prefix, plugins, helpFn, ...parseOptions } = opts
     this.name = name
     this.prefix = prefix
     this.#parseOptions = parseOptions
+    this.helpFn = helpFn
 
-    for (const plugin of plugins || []) plugin(this)
+    if (plugins) {
+      this.plugins = plugins
+      for (const plugin of plugins) plugin(this)
+    }
   }
   command<T extends readonly Option[] = readonly Option[]>(
     name: string,
@@ -219,7 +226,10 @@ export class CLI {
    * @param prefix command prefix, for example `auth`
    * @param program "program" (CLI app) instance that will handle on a specified prefix (optional)
    */
-  program(prefix: string, program = new CLI({ name: prefix, prefix })) {
+  program(
+    prefix: string,
+    program = new CLI({ prefix, plugins: this.plugins }),
+  ) {
     program.prefix = prefix
     program.parent = this
     this.programs.push(program)

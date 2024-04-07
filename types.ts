@@ -1,3 +1,5 @@
+import { CLI } from './spektr.ts'
+
 type OptionType = boolean | string | number
 
 type Option = {
@@ -42,6 +44,8 @@ type Params<T> = {
   description?: string
 }
 
+type Plugin = (cli: CLI) => void
+
 export type {
   Action,
   Command,
@@ -49,5 +53,6 @@ export type {
   OptionType,
   Params,
   ParsedOptions,
+  Plugin,
   Positionals,
 }

@@ -1,8 +1,35 @@
 import { colors, getBorderCharacters, table } from '../deps.ts'
 import type { CLI } from '../spektr.ts'
-import { Command } from '../types.ts'
+import { Command, Option } from '../types.ts'
 
 export const colorPlugin = (cli: CLI) => {
+  cli.helpFn = <
+    T extends readonly Option[] = readonly Option[],
+  >(cmd: Command<T>) => {
+    const layout: string[][] = []
+    let msg = `${colors.bold('Usage')}: ${cmd.name} [args]\n`
+    cmd.options.forEach((option) => {
+      layout.push([
+        colors.cyan([
+          `--${option.name}`,
+          `-${option.short}`,
+        ].join(', ')),
+        colors.gray(option.description || ''),
+      ])
+    })
+
+    if (layout.length !== 0) {
+      msg += table(layout, {
+        border: getBorderCharacters('void'),
+        columnDefault: {
+          paddingLeft: 4,
+        },
+        drawHorizontalLine: () => false,
+      })
+    }
+
+    return msg
+  }
   cli.createHelpMessage = () => {
     const defaultCommands = cli.commands.filter((cmd) => cmd.name === '')
 
