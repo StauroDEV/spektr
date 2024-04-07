@@ -232,7 +232,7 @@ export class CLI {
    */
   program(
     prefix: string,
-    program = new CLI({ prefix, plugins: this.plugins }),
+    program = new CLI({ name: prefix, prefix, plugins: this.plugins }),
   ) {
     program.prefix = prefix
     program.parent = this
@@ -277,9 +277,9 @@ export class CLI {
 
     const getParentName = (cli: CLI | null): string => {
       if (cli?.parent) {
-        return `${getParentName(cli.parent)} ${cli.name}`
+        return `${getParentName(cli.parent)} ${cli.name || cli.prefix}`
       } else {
-        return cli?.name || ''
+        return cli?.name || cli?.prefix || ''
       }
     }
 
