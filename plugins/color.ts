@@ -40,9 +40,9 @@ export const colorPlugin: Plugin = (cli) => {
 
     const getParentName = (cli: CLI | null): string => {
       if (cli?.parent) {
-        return `${getParentName(cli.parent)} ${cli.name}`
+        return `${getParentName(cli.parent)} ${cli.name || cli.prefix}`
       } else {
-        return cli?.name || ''
+        return cli?.name || cli?.prefix || ''
       }
     }
 

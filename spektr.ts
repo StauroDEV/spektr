@@ -47,7 +47,7 @@ export class CLI {
     if (plugins) {
       this.plugins = plugins
       for (const plugin of plugins) {
-        const { helpMessage, helpFn } = plugin(this)
+        const { helpMessage, helpFn } = plugin(Object.freeze({ ...this }))
         this.helpMessage = helpMessage
         this.helpFn = helpFn
       }
