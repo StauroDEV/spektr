@@ -1,9 +1,9 @@
 import { colors, getBorderCharacters, table } from '../deps.ts'
 import type { CLI } from '../spektr.ts'
-import { Command, Option } from '../types.ts'
+import { Command, Option, Plugin } from '../types.ts'
 
-export const colorPlugin = (cli: CLI) => {
-  cli.helpFn = <
+export const colorPlugin: Plugin = (cli) => {
+  const helpFn = <
     T extends readonly Option[] = readonly Option[],
   >(cmd: Command<T>) => {
     const layout: string[][] = []
@@ -30,7 +30,7 @@ export const colorPlugin = (cli: CLI) => {
 
     return msg
   }
-  cli.createHelpMessage = () => {
+  const helpMessage = () => {
     const defaultCommands = cli.commands.filter((cmd) => cmd.name === '')
 
     const defaultCommandOptions = defaultCommands.map((cmd) => cmd.options).map(
@@ -112,4 +112,6 @@ export const colorPlugin = (cli: CLI) => {
 
     return helpMessage
   }
+
+  return { helpMessage, helpFn }
 }

@@ -44,7 +44,7 @@ type Params<T> = {
   description?: string
 }
 
-type Plugin = (cli: CLI) => void
+type Plugin = (cli: Readonly<CLI>) => Pick<CLI, 'helpFn' | 'helpMessage'>
 
 export type {
   Action,

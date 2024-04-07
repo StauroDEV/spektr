@@ -46,7 +46,11 @@ export class CLI {
 
     if (plugins) {
       this.plugins = plugins
-      for (const plugin of plugins) plugin(this)
+      for (const plugin of plugins) {
+        const { helpMessage, helpFn } = plugin(this)
+        this.helpMessage = helpMessage
+        this.helpFn = helpFn
+      }
     }
   }
   command<T extends readonly Option[] = readonly Option[]>(
@@ -149,7 +153,7 @@ export class CLI {
           options: parsed,
           helpFn: this.helpFn,
         })
-      } else return console.log(this.createHelpMessage())
+      } else return console.log(this.helpMessage())
     }
 
     if (
@@ -263,7 +267,7 @@ export class CLI {
       }],
     })
   }
-  createHelpMessage() {
+  helpMessage() {
     const defaultCommands = this.commands.filter((cmd) => cmd.name === '')
 
     const defaultCommandOptions = defaultCommands.map((cmd) => cmd.options).map(
@@ -344,7 +348,7 @@ export class CLI {
    */
   help() {
     this.command(() => {
-      console.log(this.createHelpMessage())
+      console.log(this.helpMessage())
     }, {
       options: [{
         name: 'help',
