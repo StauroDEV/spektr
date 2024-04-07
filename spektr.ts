@@ -238,10 +238,10 @@ export class CLI {
    * @param version version string
    * @param misc additional information
    */
-  version(version = '0.0.0', misc = '') {
+  version(version?: string, misc = '') {
     this.command(() => {
       const parent = findDeepestParent(this)
-      if (parent.prefix !== this.prefix) {
+      if (parent.prefix !== this.prefix && !version) {
         console.log(parent.createVersionMessage(version, misc))
       } else console.log(this.createVersionMessage(version, misc))
     }, {
