@@ -1,6 +1,6 @@
 import { type ParseArgsConfig } from 'node:util'
 import { getBorderCharacters, table } from 'https://esm.sh/table@6.8.1'
-import { Action, Command, Option } from './types.ts'
+import { Action, Command, Option, Params } from './types.ts'
 import { handleArgParsing } from './parse.ts'
 import {
   findDeepestParent,
@@ -9,8 +9,6 @@ import {
   isAnonymousCommand,
   makeFullPath,
 } from './utils.ts'
-
-type Params<T> = { readonly options?: T; default?: boolean }
 
 /**
  * Skeptr CLI app class.
@@ -86,7 +84,12 @@ export class CLI {
         Boolean(options.find((x) => x.name === 'version' || x.name === 'help'))
       )
 
-    const common: { path: string[]; options: T; _builtin: boolean } = {
+    const common: {
+      path: string[]
+      options: T
+      _builtin: boolean
+      description?: string
+    } = {
       path: makeFullPath(
         this,
         typeof nameOrAction === 'string' ? [nameOrAction] : undefined,
@@ -98,6 +101,7 @@ export class CLI {
         type: 'boolean',
       }] as unknown as T,
       _builtin: typeof nameOrAction !== 'string' && hasHelpOrVersion,
+      description: params?.description,
     }
 
     const cmd = typeof nameOrAction === 'string'
@@ -256,8 +260,16 @@ export class CLI {
     }\n`
 
     const appendCommands = (commands: Command[]) => {
+      const layout: string[][] = []
       commands.forEach((cmd) => {
-        if (cmd.name) helpMessage += `  ${cmd.name}\n`
+        if (cmd.name) layout.push([cmd.name, cmd.description || ''])
+      })
+      helpMessage += table(layout, {
+        border: getBorderCharacters('void'),
+        columnDefault: {
+          paddingLeft: 4,
+        },
+        drawHorizontalLine: () => false,
       })
     }
 
