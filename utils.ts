@@ -1,4 +1,4 @@
-import { getBorderCharacters, table } from 'https://esm.sh/table@6.8.1'
+import { getBorderCharacters, table } from './deps.ts'
 import { CLI } from './spektr.ts'
 import type { Command, Option, ParsedOptions, Positionals } from './types.ts'
 

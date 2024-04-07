@@ -1,6 +1,7 @@
+import { colorPlugin } from './plugins/color.ts'
 import { CLI } from './spektr.ts'
 
-const cli = new CLI({ name: 'stauro' })
+const cli = new CLI({ name: 'stauro', plugins: [colorPlugin] })
 
 cli.command('hello', (_, args) => {
   args.name ? console.log(`Hello ${args.name}!`) : console.log('Hello!')

@@ -1,5 +1,4 @@
 import { type ParseArgsConfig } from 'node:util'
-import { getBorderCharacters, table } from 'https://esm.sh/table@6.8.1'
 import { Action, Command, Option, Params } from './types.ts'
 import { handleArgParsing } from './parse.ts'
 import {
@@ -9,6 +8,7 @@ import {
   isAnonymousCommand,
   makeFullPath,
 } from './utils.ts'
+import { getBorderCharacters, table } from './deps.ts'
 
 /**
  * Skeptr CLI app class.

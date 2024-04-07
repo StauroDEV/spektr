@@ -32,6 +32,7 @@ await build({
     },
     dependencies: {
       'colorette': '^2.0.20',
+      table: '^6.8.1',
     },
     devDependencies: {
       '@types/node': 'latest',
@@ -39,13 +40,17 @@ await build({
     },
   },
   mappings: {
-    'https://deno.land/std@0.220.1/fmt/colors.ts': {
+    'https://deno.land/std@0.221.0/fmt/colors.ts': {
       name: 'colorette',
       version: '&2.0.20',
     },
     'https://deno.land/x/type_detect@v4.0.8/index.js': {
       name: 'type-detect',
       version: '^4.0.8',
+    },
+    'https://esm.sh/table@6.8.2': {
+      name: 'table',
+      version: '^6.8.1',
     },
   },
   postBuild() {
