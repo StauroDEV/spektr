@@ -3,13 +3,13 @@ import {
   beforeEach,
   describe,
   it,
-} from 'https://deno.land/std@0.221.0/testing/bdd.ts'
-import { expect } from 'https://deno.land/std@0.221.0/expect/mod.ts'
+} from 'https://deno.land/std@0.224.0/testing/bdd.ts'
+import { expect } from 'https://deno.land/std@0.224.0/expect/mod.ts'
 import {
   assertSpyCall,
   Spy,
   spy,
-} from 'https://deno.land/std@0.221.0/testing/mock.ts'
+} from 'https://deno.land/std@0.224.0/testing/mock.ts'
 import { CLI } from './spektr.ts'
 import { Positionals } from './types.ts'
 import { ParsedOptions } from './types.ts'

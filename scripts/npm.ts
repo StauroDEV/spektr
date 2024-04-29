@@ -40,7 +40,7 @@ await build({
     },
   },
   mappings: {
-    'https://deno.land/std@0.221.0/fmt/colors.ts': {
+    'https://deno.land/std@0.224.0/fmt/colors.ts': {
       name: 'colorette',
       version: '&2.0.20',
     },
