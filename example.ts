@@ -12,6 +12,7 @@ cli.command('hello', (_, args) => {
   description: 'Display a hello message',
   options: [
     { name: 'name', description: 'your name', type: 'string', short: 'n' },
+    { name: 'test', type: 'string' },
   ] as const,
 })
 

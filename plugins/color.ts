@@ -10,10 +10,14 @@ export const colorPlugin: Plugin = (cli) => {
     let msg = `${colors.bold('Usage')}: ${cmd.name} [args]\n`
     cmd.options.forEach((option) => {
       layout.push([
-        colors.cyan([
-          `--${option.name}`,
-          `-${option.short}`,
-        ].join(', ')),
+        colors.cyan(
+          option.short
+            ? [
+              `--${option.name}`,
+              `-${option.short}`,
+            ].join(', ')
+            : `--${option.name}`,
+        ),
         colors.gray(option.description || ''),
       ])
     })
