@@ -323,10 +323,12 @@ export class CLI {
       defaultCommands.forEach((cmd) =>
         cmd.options.forEach((option) => {
           layout.push([
-            [
-              `--${option.name}`,
-              `-${option.short}`,
-            ].join(', '),
+            option.short
+              ? [
+                `--${option.name}`,
+                `-${option.short}`,
+              ].join(', ')
+              : `--${option.name}`,
             option.description || '',
           ])
         })
