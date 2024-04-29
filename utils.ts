@@ -63,10 +63,13 @@ export const helpMessageForCommand = <
   let msg = `Usage: ${cmd.name} [args]\n`
   cmd.options.forEach((option) => {
     layout.push([
-      [
-        `--${option.name}`,
-        `-${option.short}`,
-      ].join(', '),
+      option.short
+        ? [
+          `--${option.name}`,
+          `-${option.short}`,
+        ].join(', ')
+        : `--${option.name}`,
+      ,
       option.description || '',
     ])
   })
