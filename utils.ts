@@ -69,7 +69,6 @@ export const helpMessageForCommand = <
           `-${option.short}`,
         ].join(', ')
         : `--${option.name}`,
-      ,
       option.description || '',
     ])
   })
