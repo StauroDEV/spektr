@@ -22,16 +22,20 @@ type ParsedOptions<T extends readonly Option[]> = {
 }
 
 type Action<
+  P extends Positionals,
   T extends readonly Option[],
 > = (
-  positionals: Positionals,
+  positionals: P,
   options: ParsedOptions<T>,
 ) => void
 
-type Command<T extends readonly Option[] = readonly Option[]> = {
+type Command<
+  P extends Positionals = Positionals,
+  T extends readonly Option[] = readonly Option[],
+> = {
   path: string[]
   name: string
-  action: Action<T>
+  action: Action<P, T>
   options: T
   _builtin?: boolean
   description?: string

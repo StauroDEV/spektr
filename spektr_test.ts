@@ -54,7 +54,7 @@ describe('CLI', () => {
         },
       )
 
-      cli.command<typeof options>('test', actionSpy, { options })
+      cli.command('test', actionSpy, { options })
 
       cli.handle(['test', 'pos', '--value=str'])
 

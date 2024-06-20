@@ -1,5 +1,5 @@
 import { type ParseArgsConfig } from 'node:util'
-import { Action, Command, Option, Params } from './types.ts'
+import { Action, Command, Option, Params, Positionals } from './types.ts'
 import { handleArgParsing } from './parse.ts'
 import {
   findDeepestParent,
@@ -53,19 +53,28 @@ export class CLI {
       }
     }
   }
-  command<T extends readonly Option[] = readonly Option[]>(
+  command<
+    P extends Positionals,
+    T extends readonly Option[] = readonly Option[],
+  >(
     name: string,
-    action: Action<T>,
+    action: Action<P, T>,
     params?: Params<T>,
   ): Command
 
-  command<T extends readonly Option[] = readonly Option[]>(
+  command<
+    P extends Positionals,
+    T extends readonly Option[] = readonly Option[],
+  >(
     name: string,
-    action: Action<T>,
+    action: Action<P, T>,
   ): Command
 
-  command<T extends readonly Option[] = readonly Option[]>(
-    action: Action<T>,
+  command<
+    P extends Positionals,
+    T extends readonly Option[] = readonly Option[],
+  >(
+    action: Action<P, T>,
     params?: Params<T>,
   ): Command
 
@@ -76,11 +85,14 @@ export class CLI {
    * @param params options and additional params
    * @returns the CLI app instance
    */
-  command<T extends readonly Option[] = readonly Option[]>(
-    nameOrAction: string | Action<T>,
-    actionOrOptions?: Action<T> | Params<T>,
+  command<
+    P extends Positionals,
+    T extends readonly Option[] = readonly Option[],
+  >(
+    nameOrAction: string | Action<P, T>,
+    actionOrOptions?: Action<P, T> | Params<T>,
     params?: Params<T>,
-  ): Command {
+  ): Command<P, T> {
     const options =
       (actionOrOptions && 'options' in actionOrOptions
         ? actionOrOptions.options
@@ -117,19 +129,19 @@ export class CLI {
       default: isDefault,
     }
 
-    const cmd = typeof nameOrAction === 'string'
+    const cmd = (typeof nameOrAction === 'string'
       ? {
         name: nameOrAction,
-        action: actionOrOptions as Action<T>,
+        action: actionOrOptions as Action<P, T>,
         ...common,
       }
       : {
         name: '',
         action: nameOrAction,
         ...common,
-      }
-    if (isDefault) this.#defaultCommand = cmd
-    this.commands.push(cmd)
+      }) as Command<P, T>
+    if (isDefault) this.#defaultCommand = cmd as unknown as Command
+    this.commands.push(cmd as unknown as Command)
 
     return cmd
   }

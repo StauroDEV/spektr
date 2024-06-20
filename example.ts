@@ -26,6 +26,10 @@ pg.command('hello', (_, args) => {
   ] as const,
 })
 
+pg.command<[string]>('pos', ([pos]) => {
+  console.log(`This positional is typed: ${pos}`)
+})
+
 pg.version('1.2.3')
 
 cli.version()

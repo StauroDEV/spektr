@@ -57,8 +57,9 @@ export function findExactCommand(commands: Command[], args: string[]) {
 }
 
 export const helpMessageForCommand = <
+  P extends Positionals = Positionals,
   T extends readonly Option[] = readonly Option[],
->(cmd: Command<T>) => {
+>(cmd: Command<P, T>) => {
   const layout: string[][] = []
   let msg = `Usage: ${cmd.name} [args]\n`
   cmd.options.forEach((option) => {
@@ -87,13 +88,14 @@ export const helpMessageForCommand = <
 }
 
 export const handleActionWithHelp = <
+  P extends Positionals = Positionals,
   T extends readonly Option[] = readonly Option[],
 >(
   { cmd, positionals, options, helpFn = helpMessageForCommand }: {
-    cmd: Command<T>
-    positionals: Positionals
+    cmd: Command<P, T>
+    positionals: P
     options: ParsedOptions<T>
-    helpFn?: (cmd: Command<T>) => string
+    helpFn?: (cmd: Command<P, T>) => string
   },
 ) => {
   if (cmd.name !== '' && ('help' in options || 'h' in options)) {
