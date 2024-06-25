@@ -137,7 +137,7 @@ describe('CLI', () => {
     it('throws if trying to use a default command which is not defined', () => {
       const cli = new CLI()
 
-      expect(() => cli.handle(['default', '--arg'])).toThrow(
+      expect(() => cli.handle(['--arg'])).toThrow(
         'Command not found',
       )
     })
@@ -265,6 +265,44 @@ describe('CLI', () => {
       cli.handle(['sub', '--version'])
 
       assertSpyCall(consoleSpy, 0, { args: ['root: 0.0.0'] })
+    })
+  })
+  describe('middleware', () => {
+    describe('wildcard', () => {
+      it('runs for all commands of the CLI', () => {
+        const cli = new CLI()
+
+        const mwSpy = spy(() => `Middleware`)
+
+        cli.middleware('*', mwSpy)
+
+        cli.command('hello', () => 'Hello')
+        cli.command('bye', () => 'Bye')
+
+        cli.handle(['hello'])
+
+        assertSpyCall(mwSpy, 0)
+        cli.handle(['hello'])
+        assertSpyCall(mwSpy, 1)
+        cli.handle(['bye'])
+      })
+      it('runs for the default command', () => {
+        const cli = new CLI()
+
+        const mwSpy = spy(() => `Middleware`)
+
+        cli.middleware('*', mwSpy)
+
+        cli.command('hello', () => 'Hello', {
+          default: true,
+          options: [{ name: 'option', type: 'boolean' }],
+        })
+
+        cli.handle([])
+        assertSpyCall(mwSpy, 0)
+        cli.handle(['--option'])
+        assertSpyCall(mwSpy, 1)
+      })
     })
   })
 })

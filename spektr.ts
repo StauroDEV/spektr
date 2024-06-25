@@ -205,9 +205,7 @@ export class CLI {
       )
     ) {
       const cmd = findExactCommand(
-        this.#defaultCommand
-          ? [...this.commands, this.#defaultCommand]
-          : this.commands,
+        this.commands,
         args,
       )
 
@@ -247,7 +245,7 @@ export class CLI {
       )
 
       const middleware = this.mws.filter((m) =>
-        m.path.every((x) => cmd.path.every((y) => y === x))
+        m.path.every((x) => cmd.path.every((y) => y === x)) || m.matcher === '*'
       )
 
       for (const m of middleware) m.action(positionals, parsed)
@@ -264,6 +262,7 @@ export class CLI {
         args,
         this.#parseOptions,
       )
+      for (const m of defaultMws) m.action(positionals, parsed)
       return handleActionWithHelp({
         cmd: defaultCommand,
         positionals: positionals.slice(defaultCommand.path.length),

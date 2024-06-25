@@ -37,7 +37,9 @@ export function findExactCommand(commands: Command[], args: string[]) {
 
   // Filter commands that have the path present in args in the correct order
   const pathMatchCommands = commands.filter((command) =>
-    command.path.every((pathPart, index) => positionals[index] === pathPart)
+    positionals.length === 0 && command.default
+      ? command
+      : command.path.every((pathPart, index) => positionals[index] === pathPart)
   )
 
   if (pathMatchCommands.length > 0) {
