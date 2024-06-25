@@ -259,12 +259,12 @@ describe('CLI', () => {
 
       const sub = new CLI({ name: 'sub' })
 
-      cli.version()
+      cli.version('1.1.1')
       sub.version()
 
       cli.handle(['sub', '--version'])
 
-      assertSpyCall(consoleSpy, 0, { args: ['root: 0.0.0'] })
+      assertSpyCall(consoleSpy, 0, { args: ['root: 1.1.1'] })
     })
   })
   describe('middleware', () => {
