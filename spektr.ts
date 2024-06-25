@@ -46,11 +46,15 @@ export class CLI {
       }
       & ParseArgsConfig = {},
   ) {
-    const { name, prefix, plugins, helpFn, ...parseOptions } = opts
+    const { name, prefix, helpFn, ...parseOptions } = opts
     this.name = name
     this.prefix = prefix
     this.#parseOptions = parseOptions
     this.helpFn = helpFn
+
+    const plugins = this.parent
+      ? [...this.parent.plugins, ...(opts.plugins || [])]
+      : opts.plugins
 
     if (plugins) {
       this.plugins = plugins

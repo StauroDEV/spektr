@@ -11,7 +11,7 @@ import {
   spy,
 } from 'https://deno.land/std@0.224.0/testing/mock.ts'
 import { CLI } from './spektr.ts'
-import { Positionals } from './types.ts'
+import { Plugin, Positionals } from './types.ts'
 import { ParsedOptions } from './types.ts'
 
 describe('CLI', () => {
@@ -316,6 +316,38 @@ describe('CLI', () => {
       cli.handle(['hello']) // doesn't match
       cli.handle(['hey'])
       assertSpyCall(mwSpy, 0)
+    })
+  })
+  describe('plugins', () => {
+    it('should apply them', () => {
+      const helpFnSpy = spy(() => `Plugin`)
+      const myPlugin: Plugin = () => ({
+        helpFn: () => 'Help',
+        helpMessage: helpFnSpy,
+      })
+
+      const cli = new CLI({ plugins: [myPlugin] })
+      cli.help()
+
+      cli.handle(['--help'])
+
+      assertSpyCall(helpFnSpy, 0)
+    })
+    it('should nest plugins', () => {
+      const helpFnSpy = spy(() => `Plugin`)
+      const myPlugin: Plugin = () => ({
+        helpFn: () => 'Help',
+        helpMessage: helpFnSpy,
+      })
+
+      const cli = new CLI({ plugins: [myPlugin] })
+      cli.help()
+
+      cli.program('sub').help()
+
+      cli.handle(['sub', '--help'])
+
+      assertSpyCall(helpFnSpy, 0)
     })
   })
 })
