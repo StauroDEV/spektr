@@ -304,5 +304,18 @@ describe('CLI', () => {
         assertSpyCall(mwSpy, 1)
       })
     })
+    it('runs for a matching path', () => {
+      const cli = new CLI()
+      const mwSpy = spy(() => `Middleware`)
+
+      cli.middleware('hey', mwSpy)
+
+      cli.command('hello', () => 'Hello')
+      cli.command('hey', () => 'Hey')
+
+      cli.handle(['hello']) // doesn't match
+      cli.handle(['hey'])
+      assertSpyCall(mwSpy, 0)
+    })
   })
 })
