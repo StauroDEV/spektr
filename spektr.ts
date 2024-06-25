@@ -1,5 +1,12 @@
 import { type ParseArgsConfig } from 'node:util'
-import { Action, Command, Option, Params, Positionals } from './types.ts'
+import {
+  Action,
+  Command,
+  Middleware,
+  Option,
+  Params,
+  Positionals,
+} from './types.ts'
 import { handleArgParsing } from './parse.ts'
 import {
   findDeepestParent,
@@ -28,6 +35,7 @@ export class CLI {
   #parseOptions?: ParseArgsConfig
   helpFn?: (cmd: Command) => string
   plugins: Plugin[] = []
+  mws: Middleware[] = []
   constructor(
     opts:
       & {
@@ -147,10 +155,27 @@ export class CLI {
   }
 
   /**
+   * Add a middleware to run before commands
+   * @param matcher path matcher. "*" matches all commands.
+   * @param action command action to run
+   */
+  middleware<
+    P extends Positionals,
+  >(matcher: string, action: Action<P>) {
+    ;(this.mws as unknown[] as Middleware<P>[]).push({
+      matcher,
+      path: makeFullPath(this, [matcher]),
+      action,
+    })
+  }
+
+  /**
    * Handle commands with the given arguments. For Deno use `Deno.args`, for Node.js and Bun use `process.argv`
    * @param args
    */
   handle(args: string[]): void {
+    // cli.middleware('*', () => ...)
+    const defaultMws = this.mws.filter((x) => x.matcher === '*')
     if (args.length === 0) {
       if (this.#defaultCommand) {
         const { positionals, parsed } = handleArgParsing(
@@ -158,6 +183,8 @@ export class CLI {
           args,
           this.#parseOptions,
         )
+
+        for (const m of defaultMws) m.action(positionals, parsed)
 
         return handleActionWithHelp({
           cmd: this.#defaultCommand,
@@ -192,6 +219,8 @@ export class CLI {
         this.#parseOptions,
       )
 
+      for (const m of defaultMws) m.action(positionals, parsed)
+
       return handleActionWithHelp({
         cmd,
         positionals: positionals.slice(cmd.path.length),
@@ -216,6 +245,12 @@ export class CLI {
         args,
         this.#parseOptions,
       )
+
+      const middleware = this.mws.filter((m) =>
+        m.path.every((x) => cmd.path.every((y) => y === x))
+      )
+
+      for (const m of middleware) m.action(positionals, parsed)
 
       return handleActionWithHelp({
         cmd,

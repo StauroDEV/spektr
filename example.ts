@@ -6,6 +6,8 @@ const cli = new CLI({
   plugins: [colorPlugin],
 })
 
+cli.middleware('hello', (...args) => console.log('[DEBUG]', ...args))
+
 cli.command('hello', (_, args) => {
   args.name ? console.log(`Hello ${args.name}!`) : console.log('Hello!')
 }, {

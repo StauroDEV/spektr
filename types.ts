@@ -23,7 +23,7 @@ type ParsedOptions<T extends readonly Option[]> = {
 
 type Action<
   P extends Positionals,
-  T extends readonly Option[],
+  T extends readonly Option[] = readonly Option[],
 > = (
   positionals: P,
   options: ParsedOptions<T>,
@@ -42,6 +42,14 @@ type Command<
   default?: boolean
 }
 
+type Middleware<
+  P extends Positionals = Positionals,
+> = {
+  path: string[]
+  matcher: string
+  action: Action<P, readonly Option[]>
+}
+
 type Params<T> = {
   readonly options?: T
   default?: boolean
@@ -53,6 +61,7 @@ type Plugin = (cli: Readonly<CLI>) => Pick<CLI, 'helpFn' | 'helpMessage'>
 export type {
   Action,
   Command,
+  Middleware,
   Option,
   OptionType,
   Params,

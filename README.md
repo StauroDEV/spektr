@@ -20,6 +20,7 @@ with Deno, Node.js and Bun.
 - Argument validation
 - Auto-complete for options
 - Pluggable (color plugin out-of-the-box)
+- Middleware API to run before commands
 
 ## Install
 
