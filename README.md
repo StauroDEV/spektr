@@ -30,15 +30,16 @@ bun i spektr
 # pnpm
 pnpm i spektr
 # Deno
-echo "export { CLI } from 'https://deno.land/x/spektr/mod.ts'" >> deps.ts
+echo "export { CLI } from 'https://deno.land/x/spektr/spektr.ts'" >> deps.ts
 ```
 
 ## Example
 
 ```ts
-import { CLI, withColorPlugin } from 'https://deno.land/x/spektr/mod.ts'
+import { CLI } from 'https://deno.land/x/spektr/spektr.ts'
+import { colorPlugin } from 'https://deno.land/x/spektr/spektr/plugins/color.ts'
 
-const cli = new CLI({ name: 'spektr', plugins: [withColorPlugin] })
+const cli = new CLI({ name: 'spektr', plugins: [colorPlugin] })
 
 cli.command(
   'hello',
