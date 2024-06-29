@@ -5,7 +5,7 @@ await emptyDir('./npm')
 
 await build({
   packageManager: 'pnpm',
-  entryPoints: ['./mod.ts', './plugins/color.ts'],
+  entryPoints: ['./spektr.ts', './plugins/color.ts'],
   outDir: './npm',
   scriptModule: false,
   shims: { deno: false },
