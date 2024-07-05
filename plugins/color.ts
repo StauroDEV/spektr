@@ -1,11 +1,9 @@
 import { colors, getBorderCharacters, table } from '../deps.ts'
 import type { CLI } from '../spektr.ts'
-import { Command, Option, Plugin } from '../types.ts'
+import { Command, Plugin } from '../types.ts'
 
 export const colorPlugin: Plugin = (cli) => {
-  const helpFn = <
-    T extends readonly Option[] = readonly Option[],
-  >(cmd: Command<T>) => {
+  const helpFn = (cmd: Command) => {
     const layout: string[][] = []
     let msg = `${colors.bold('Usage')}: ${cmd.name} [args]\n`
     cmd.options.forEach((option) => {
