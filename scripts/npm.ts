@@ -22,10 +22,10 @@ await build({
     license: 'Apache-2.0',
     repository: {
       type: 'git',
-      url: 'git+https://github.com/stauroDEV/spektr.git',
+      url: 'https://github.com/StauroDEV/spektr.git',
     },
     bugs: {
-      url: 'https://github.com/stauroDEV/spektr/issues',
+      url: 'https://github.com/StauroDEV/spektr/issues',
     },
     publishConfig: {
       access: 'public',
