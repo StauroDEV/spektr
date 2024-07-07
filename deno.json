@@ -3,5 +3,10 @@
     "semiColons": false,
     "singleQuote": true
   },
-  "exclude": ["npm", "coverage", ".cache"]
+  "exclude": ["npm", "coverage", ".cache"],
+  "name": "@stauro/spektr",
+  "exports": {
+    "./": "./mod.ts",
+    "./plugins/color": "./plugins.color.ts"
+  }
 }
