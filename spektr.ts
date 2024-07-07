@@ -27,7 +27,7 @@ export class CLI {
   /**
    * CLI Prefix, for example `auth`
    */
-  prefix?: string
+  prefix: string
   parent?: CLI
   commands: Command[] = []
   #defaultCommand?: Command
@@ -48,7 +48,7 @@ export class CLI {
   ) {
     const { name, prefix, helpFn, ...parseOptions } = opts
     this.name = name
-    this.prefix = prefix
+    this.prefix = prefix || ''
     this.#parseOptions = parseOptions
     this.helpFn = helpFn
 
@@ -240,6 +240,12 @@ export class CLI {
     const defaultCommand = this.commands.find((c) => c.default)
 
     if (program) {
+      const middleware = this.mws.filter((m) =>
+        m.path.at(-1) === program.prefix || m.matcher === '*'
+      )
+
+      for (const m of middleware) m.action([program.prefix], {})
+
       return program.handle(args.slice(1))
     } else if (cmd) {
       const { positionals, parsed } = handleArgParsing(

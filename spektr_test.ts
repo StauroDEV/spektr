@@ -19,7 +19,7 @@ describe('CLI', () => {
     const cli = new CLI({ name: 'cli' })
 
     expect(cli.name).toEqual('cli')
-    expect(cli.prefix).toEqual(undefined)
+    expect(cli.prefix).toEqual('')
   })
   describe('commands', () => {
     it('matching command is handled', () => {
@@ -315,6 +315,31 @@ describe('CLI', () => {
 
       cli.handle(['hello']) // doesn't match
       cli.handle(['hey'])
+      assertSpyCall(mwSpy, 0)
+    })
+    it('runs for subgprograms matching the path', () => {
+      const cli = new CLI()
+      const mwSpy = spy(() => `Middleware`)
+
+      cli.middleware('sub', mwSpy)
+      const sub = cli.program('sub')
+
+      sub.command('hello', () => 'Hello')
+
+      cli.handle(['sub', 'hello'])
+      assertSpyCall(mwSpy, 0)
+    })
+    it('asterisk matches subprograms', () => {
+      const cli = new CLI()
+
+      const mwSpy = spy(() => `Middleware`)
+
+      cli.middleware('*', mwSpy)
+      const sub = cli.program('sub')
+
+      sub.command('hello', () => 'Hello')
+
+      cli.handle(['sub', 'hello'])
       assertSpyCall(mwSpy, 0)
     })
   })
