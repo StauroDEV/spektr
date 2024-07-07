@@ -2,6 +2,6 @@
   "fmt": {
     "semiColons": false,
     "singleQuote": true,
-    "exclude": ["npm", "coverage"]
+    "exclude": ["npm", "coverage", ".cache"]
   }
 }
