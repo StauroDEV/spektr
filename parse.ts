@@ -1,5 +1,5 @@
 import typeDetect from 'https://deno.land/x/type_detect@v4.0.8/index.js'
-import { Option, ParsedOptions } from './types.ts'
+import type { Option, ParsedOptions } from './types.ts'
 import { parseArgs, type ParseArgsConfig } from 'node:util'
 
 export const handleArgParsing = <

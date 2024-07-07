@@ -1,5 +1,5 @@
-import { type ParseArgsConfig } from 'node:util'
-import {
+import type { ParseArgsConfig } from 'node:util'
+import type {
   Action,
   Command,
   Middleware,
@@ -16,7 +16,7 @@ import {
   makeFullPath,
 } from './utils.ts'
 import { getBorderCharacters, table } from './deps.ts'
-import { Plugin } from './types.ts'
+import type { Plugin } from './types.ts'
 
 /**
  * Skeptr CLI app class.
@@ -282,11 +282,11 @@ export class CLI {
    */
   program(
     prefix: string,
-    program = new CLI({
+    program: CLI = new CLI({
       name: prefix,
       prefix,
     }),
-  ) {
+  ): CLI {
     program.plugins = this.plugins.concat(program.plugins)
 
     for (const plugin of program.plugins) {
@@ -306,7 +306,7 @@ export class CLI {
   createVersionMessage(
     version = '0.0.0',
     misc = '',
-  ) {
+  ): string {
     return this.name
       ? `${this.name}: ${version}${misc}`
       : `Spektr: ${version}${misc}`
@@ -331,7 +331,7 @@ export class CLI {
       }],
     })
   }
-  helpMessage() {
+  helpMessage(): string {
     const defaultCommands = this.commands.filter((cmd) => cmd.name === '')
 
     const defaultCommandOptions = defaultCommands.map((cmd) => cmd.options).map(

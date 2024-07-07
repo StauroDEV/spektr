@@ -1,4 +1,4 @@
-import { CLI } from './spektr.ts'
+import type { CLI } from './spektr.ts'
 
 type OptionType = boolean | string | number
 

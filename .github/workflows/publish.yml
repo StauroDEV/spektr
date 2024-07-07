@@ -35,5 +35,3 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: cd npm && npm publish --provenance
-      - name: JSR publish
-        run: deno publish
