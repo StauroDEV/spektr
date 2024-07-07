@@ -5,8 +5,9 @@
   },
   "exclude": ["npm", "coverage", ".cache"],
   "name": "@stauro/spektr",
+  "version": "0.1.1",
   "exports": {
-    "./": "./mod.ts",
+    ".": "./spektr.ts",
     "./plugins/color": "./plugins.color.ts"
   }
 }
