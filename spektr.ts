@@ -52,17 +52,11 @@ export class CLI {
     this.#parseOptions = parseOptions
     this.helpFn = helpFn
 
-    const plugins = this.parent
-      ? [...this.parent.plugins, ...(opts.plugins || [])]
-      : opts.plugins
-
-    if (plugins) {
-      this.plugins = plugins
-      for (const plugin of plugins) {
-        const { helpMessage, helpFn } = plugin(Object.freeze({ ...this }))
-        this.helpMessage = helpMessage
-        this.helpFn = helpFn
-      }
+    this.plugins = opts.plugins || []
+    for (const plugin of this.plugins) {
+      const { helpMessage, helpFn } = plugin(Object.freeze({ ...this }))
+      this.helpMessage = helpMessage
+      this.helpFn = helpFn
     }
   }
   command<
@@ -288,9 +282,23 @@ export class CLI {
    */
   program(
     prefix: string,
-    program = new CLI({ name: prefix, prefix, plugins: this.plugins }),
+    program = new CLI({
+      name: prefix,
+      prefix,
+    }),
   ) {
+    program.plugins = this.plugins.concat(program.plugins)
+
+    for (const plugin of program.plugins) {
+      const { helpMessage, helpFn } = plugin(
+        Object.freeze({ ...program } as CLI),
+      )
+      program.helpMessage = helpMessage
+      program.helpFn = helpFn
+    }
+
     program.prefix = prefix
+
     program.parent = this
     this.programs.push(program)
     return program

@@ -20,6 +20,7 @@ describe('CLI', () => {
 
     expect(cli.name).toEqual('cli')
     expect(cli.prefix).toEqual('')
+    expect(cli.plugins).toEqual([])
   })
   describe('commands', () => {
     it('matching command is handled', () => {
@@ -357,6 +358,8 @@ describe('CLI', () => {
       cli.handle(['--help'])
 
       assertSpyCall(helpFnSpy, 0)
+
+      expect(cli.plugins).toEqual([myPlugin])
     })
     it('should nest plugins', () => {
       const helpFnSpy = spy(() => `Plugin`)
@@ -368,11 +371,68 @@ describe('CLI', () => {
       const cli = new CLI({ plugins: [myPlugin] })
       cli.help()
 
-      cli.program('sub').help()
+      const sub = cli.program('sub')
+
+      sub.help()
+
+      expect(sub.plugins).toEqual([myPlugin])
 
       cli.handle(['sub', '--help'])
 
       assertSpyCall(helpFnSpy, 0)
+    })
+    it('should append plugins to parent plugins', () => {
+      const myPlugin: Plugin = () => ({
+        helpFn: () => 'Help',
+        helpMessage: () => 'Helloo',
+      })
+
+      const cli = new CLI({ plugins: [myPlugin] })
+      cli.help()
+
+      const anotherPlugin: Plugin = () => ({
+        helpFn: () => 'Sub help',
+        helpMessage: () => 'Sub hello',
+      })
+
+      const sub = new CLI({
+        name: 'sub',
+        prefix: 'sub',
+        plugins: [anotherPlugin],
+      })
+
+      cli.program('sub', sub)
+
+      sub.help()
+
+      expect(sub.plugins).toEqual([myPlugin, anotherPlugin])
+    })
+  })
+  describe('program', () => {
+    it('sets prefix and plugins', () => {
+      const cli = new CLI()
+
+      const test = cli.program('test')
+
+      expect(test).toBeInstanceOf(CLI)
+
+      expect(test.prefix, 'test')
+      expect(test.parent).toEqual(cli)
+      expect(cli.programs).toEqual([test])
+    })
+  })
+  describe('createVersionMessage', () => {
+    it('has version to 0.0.0 and name to Spektr by default', () => {
+      const cli = new CLI()
+
+      expect(cli.createVersionMessage()).toEqual('Spektr: 0.0.0')
+    })
+    it('allows passing custom version and misc info', () => {
+      const cli = new CLI()
+
+      expect(cli.createVersionMessage('1.0.0', '\nhello')).toEqual(
+        'Spektr: 1.0.0\nhello',
+      )
     })
   })
 })

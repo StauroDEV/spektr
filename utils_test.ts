@@ -148,6 +148,20 @@ describe('helpMessageForCommand', () => {
         '    --help, -h     shows this message \n',
     )
   })
+  it('allows not specifying short name for an option', () => {
+    const cli = new CLI({ name: 'cli' })
+
+    cli.command('test', () => {}, {
+      options: [{ name: 'test', type: 'boolean' }],
+    })
+
+    const message = helpMessageForCommand(cli.commands[0])
+
+    expect(message).toEqual(
+      'Usage: test [args]\n' + '    --test                            \n' +
+        '    --help, -h     shows this message \n',
+    )
+  })
 })
 
 describe('findDeepestParent', () => {
