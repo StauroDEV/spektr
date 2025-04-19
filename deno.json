@@ -10,5 +10,11 @@
     "@std/fmt": "jsr:@std/fmt@^1.0.6",
     "@std/testing": "jsr:@std/testing@^1.0.11",
     "table": "npm:table@^6.9.0"
+  },
+  "name": "@stauro/spektr",
+  "version": "0.1.2",
+  "exports":{
+    ".": "./mod.ts",
+    "./plugins/color": "./plugins/color.ts"
   }
 }
