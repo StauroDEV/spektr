@@ -40,7 +40,8 @@ export const handleArgParsing = <
 
   for (const [arg, value] of parsedArgs) {
     const opt = options.find((x) => x.name === arg || x.short === arg)
-    const actualType = typeDetect.default(value)
+    // @ts-expect-error type-detect has incorrect types
+    const actualType = typeDetect(value)
     if (!opt) throw new Error(`Unknown argument: ${arg}`)
     if (actualType !== opt.type) {
       throw new Error(
