@@ -8,11 +8,13 @@
     "jsr:@std/assert@0.226": "0.226.0",
     "jsr:@std/assert@^1.0.12": "1.0.12",
     "jsr:@std/bytes@0.223": "0.223.0",
+    "jsr:@std/data-structures@^1.0.6": "1.0.6",
     "jsr:@std/expect@^1.0.15": "1.0.15",
     "jsr:@std/fmt@0.223": "0.223.0",
     "jsr:@std/fmt@1": "1.0.6",
     "jsr:@std/fs@0.223": "0.223.0",
     "jsr:@std/fs@1": "1.0.16",
+    "jsr:@std/fs@^1.0.16": "1.0.16",
     "jsr:@std/fs@~0.229.3": "0.229.3",
     "jsr:@std/internal@^1.0.6": "1.0.6",
     "jsr:@std/io@0.223": "0.223.0",
@@ -25,8 +27,7 @@
     "jsr:@ts-morph/bootstrap@0.24": "0.24.0",
     "jsr:@ts-morph/common@0.24": "0.24.0",
     "npm:picocolors@^1.1.1": "1.1.1",
-    "npm:table@^6.9.0": "6.9.0",
-    "npm:type-detect@^4.1.0": "4.1.0"
+    "npm:table@^6.9.0": "6.9.0"
   },
   "jsr": {
     "@david/code-block-writer@13.0.3": {
@@ -66,6 +67,9 @@
     },
     "@std/bytes@0.223.0": {
       "integrity": "84b75052cd8680942c397c2631318772b295019098f40aac5c36cead4cba51a8"
+    },
+    "@std/data-structures@1.0.6": {
+      "integrity": "76a7fd8080c66604c0496220a791860492ab21a04a63a969c0b9a0609bbbb760"
     },
     "@std/expect@1.0.15": {
       "integrity": "eca360007b5a7f13dbfa1294224baee7fb98dcd460d8461fe64eeae302902945",
@@ -127,7 +131,10 @@
       "integrity": "12b3db12d34f0f385a26248933bde766c0f8c5ad8b6ab34d4d38f528ab852f48",
       "dependencies": [
         "jsr:@std/assert@^1.0.12",
-        "jsr:@std/internal"
+        "jsr:@std/data-structures",
+        "jsr:@std/fs@^1.0.16",
+        "jsr:@std/internal",
+        "jsr:@std/path@^1.0.8"
       ]
     },
     "@ts-morph/bootstrap@0.24.0": {
@@ -230,9 +237,6 @@
         "string-width",
         "strip-ansi"
       ]
-    },
-    "type-detect@4.1.0": {
-      "integrity": "sha512-Acylog8/luQ8L7il+geoSxhEkazvkslg7PSNKOX59mbB9cOveP5aq9h74Y7YU8yDpJwetzQQrfIwtf4Wp4LKcw=="
     }
   },
   "workspace": {
@@ -241,8 +245,7 @@
       "jsr:@std/expect@^1.0.15",
       "jsr:@std/testing@^1.0.11",
       "npm:picocolors@^1.1.1",
-      "npm:table@^6.9.0",
-      "npm:type-detect@^4.1.0"
+      "npm:table@^6.9.0"
     ]
   }
 }

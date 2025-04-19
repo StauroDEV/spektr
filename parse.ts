@@ -1,6 +1,13 @@
-import typeDetect from 'type-detect'
 import type { Option, ParsedOptions } from './types.ts'
 import { parseArgs, type ParseArgsConfig } from 'node:util'
+
+const detectType = (value: unknown): string => {
+  if (typeof value === 'boolean') return 'boolean'
+  if (typeof value === 'number') return 'number'
+  if (typeof value === 'string') return 'string'
+  if (value instanceof Array) return 'array'
+  return 'unknown'
+}
 
 export const handleArgParsing = <
   T extends readonly Option[] = readonly Option[],
@@ -40,8 +47,7 @@ export const handleArgParsing = <
 
   for (const [arg, value] of parsedArgs) {
     const opt = options.find((x) => x.name === arg || x.short === arg)
-    // @ts-ignore type-detect has incorrect types
-    const actualType = typeDetect(value)
+    const actualType = detectType(value)
     if (!opt) throw new Error(`Unknown argument: ${arg}`)
     if (actualType !== opt.type) {
       throw new Error(

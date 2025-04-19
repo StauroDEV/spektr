@@ -22,7 +22,8 @@ await build({
     description: 'Elegant CLI framework.',
     license: 'Apache-2.0',
     repository: {
-      url: 'git+https://github.com/stauroDEV/spektr.git',
+      type: 'git',
+      url: 'https://github.com/stauroDEV/spektr.git',
     },
     bugs: {
       url: 'https://github.com/stauroDEV/spektr/issues',
@@ -33,11 +34,9 @@ await build({
     dependencies: {
       'picocolors': '^1.1.1',
       table: '^6.8.1',
-      'type-detect': '^4.0.8',
     },
     devDependencies: {
       '@types/node': 'latest',
-      '@types/type-detect': '^4.0.3',
     },
   },
   postBuild() {
