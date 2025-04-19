@@ -8,7 +8,6 @@ await build({
   entryPoints: ['./spektr.ts', './plugins/color.ts'],
   outDir: './npm',
   scriptModule: false,
-  typeCheck: false,
   shims: { deno: false },
   declaration: 'inline',
   test: false,
