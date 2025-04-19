@@ -9,6 +9,7 @@ await build({
   outDir: './npm',
   scriptModule: false,
   shims: { deno: false },
+  declaration: 'inline',
   test: false,
   compilerOptions: {
     lib: ['DOM', 'ESNext'],
@@ -37,12 +38,6 @@ await build({
     devDependencies: {
       '@types/node': 'latest',
       '@types/type-detect': '^4.0.3',
-    },
-  },
-  mappings: {
-    'https://deno.land/x/type_detect@v4.0.8/index.js': {
-      name: 'type-detect',
-      version: '^4.0.8',
     },
   },
   postBuild() {

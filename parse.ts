@@ -1,4 +1,4 @@
-import typeDetect from 'https://deno.land/x/type_detect@v4.0.8/index.js'
+import typeDetect from 'type-detect'
 import type { Option, ParsedOptions } from './types.ts'
 import { parseArgs, type ParseArgsConfig } from 'node:util'
 
@@ -40,7 +40,7 @@ export const handleArgParsing = <
 
   for (const [arg, value] of parsedArgs) {
     const opt = options.find((x) => x.name === arg || x.short === arg)
-    const actualType = typeDetect(value)
+    const actualType = typeDetect.default(value)
     if (!opt) throw new Error(`Unknown argument: ${arg}`)
     if (actualType !== opt.type) {
       throw new Error(
