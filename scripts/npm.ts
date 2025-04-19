@@ -8,8 +8,8 @@ await build({
   entryPoints: ['./spektr.ts', './plugins/color.ts'],
   outDir: './npm',
   scriptModule: false,
+  declaration: 'separate',
   shims: { deno: false },
-  declaration: 'inline',
   test: false,
   compilerOptions: {
     lib: ['DOM', 'ESNext'],
@@ -22,19 +22,18 @@ await build({
     description: 'Elegant CLI framework.',
     license: 'Apache-2.0',
     repository: {
-      type: 'git',
-      url: 'https://github.com/StauroDEV/spektr.git',
+      url: 'git+https://github.com/stauroDEV/spektr.git',
     },
     bugs: {
-      url: 'https://github.com/StauroDEV/spektr/issues',
+      url: 'https://github.com/stauroDEV/spektr/issues',
     },
     publishConfig: {
       access: 'public',
     },
     dependencies: {
-      picocolors: '^1.1.1',
+      'picocolors': '^1.1.1',
       table: '^6.8.1',
-      'type-detect': '^4.1.0',
+      'type-detect': '^4.0.8',
     },
     devDependencies: {
       '@types/node': 'latest',
