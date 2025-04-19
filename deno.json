@@ -8,8 +8,7 @@
     "@deno/dnt": "jsr:@deno/dnt@^0.41.3",
     "@std/expect": "jsr:@std/expect@^1.0.15",
     "@std/testing": "jsr:@std/testing@^1.0.11",
-    "picocolors": "npm:picocolors@^1.1.1",
-    "table": "npm:table@^6.9.0"
+    "picocolors": "npm:picocolors@^1.1.1"
   },
   "name": "@stauro/spektr",
   "version": "0.1.2",

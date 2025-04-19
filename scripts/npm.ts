@@ -33,7 +33,6 @@ await build({
     },
     dependencies: {
       'picocolors': '^1.1.1',
-      table: '^6.8.1',
     },
     devDependencies: {
       '@types/node': 'latest',

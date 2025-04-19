@@ -1,6 +1,7 @@
-import { colors, getBorderCharacters, table } from '../deps.ts'
+import { colors } from '../deps.ts'
 import type { CLI } from '../spektr.ts'
 import type { Command, Plugin } from '../types.ts'
+import { renderTable } from '../utils.ts'
 
 export const colorPlugin: Plugin = (cli) => {
   const helpFn = (cmd: Command) => {
@@ -21,13 +22,7 @@ export const colorPlugin: Plugin = (cli) => {
     })
 
     if (layout.length !== 0) {
-      msg += table(layout, {
-        border: getBorderCharacters('void'),
-        columnDefault: {
-          paddingLeft: 4,
-        },
-        drawHorizontalLine: () => false,
-      })
+      msg += renderTable(layout)
     }
 
     return msg
@@ -64,13 +59,7 @@ export const colorPlugin: Plugin = (cli) => {
         }
       })
       if (layout.length) {
-        helpMessage += table(layout, {
-          border: getBorderCharacters('void'),
-          columnDefault: {
-            paddingLeft: 4,
-          },
-          drawHorizontalLine: () => false,
-        })
+        helpMessage += renderTable(layout)
       }
     }
 
@@ -107,13 +96,7 @@ export const colorPlugin: Plugin = (cli) => {
         })
       )
 
-      helpMessage += table(layout, {
-        border: getBorderCharacters('void'),
-        columnDefault: {
-          paddingLeft: 4,
-        },
-        drawHorizontalLine: () => false,
-      })
+      helpMessage += renderTable(layout)
     }
 
     return helpMessage

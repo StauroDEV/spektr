@@ -1,4 +1,3 @@
-import { getBorderCharacters, table } from './deps.ts'
 import type { CLI } from './spektr.ts'
 import type { Command, Option, ParsedOptions, Positionals } from './types.ts'
 
@@ -77,13 +76,7 @@ export const helpMessageForCommand = <
   })
 
   if (layout.length !== 0) {
-    msg += table(layout, {
-      border: getBorderCharacters('void'),
-      columnDefault: {
-        paddingLeft: 4,
-      },
-      drawHorizontalLine: () => false,
-    })
+    msg += renderTable(layout)
   }
 
   return msg
@@ -103,4 +96,20 @@ export const handleActionWithHelp = <
   if (cmd.name !== '' && ('help' in options || 'h' in options)) {
     return console.log(helpFn(cmd))
   } else return cmd.action(positionals, options)
+}
+
+export function renderTable(rows: string[][]): string {
+  if (rows.length === 0) return ''
+
+  const leftColWidth = Math.max(...rows.map((row) => (row[0] || '').length))
+
+  let output = ''
+
+  for (const row of rows) {
+    output += `${' '.repeat(4)}${row[0].padEnd(leftColWidth)}${' '.repeat(5)}${
+      row[1]
+    }\n`
+  }
+
+  return output
 }

@@ -14,8 +14,8 @@ import {
   handleActionWithHelp,
   isAnonymousCommand,
   makeFullPath,
+  renderTable,
 } from './utils.ts'
-import { getBorderCharacters, table } from './deps.ts'
 import type { Plugin } from './types.ts'
 
 /**
@@ -359,13 +359,7 @@ export class CLI {
         if (cmd.name) layout.push([cmd.name, cmd.description || ''])
       })
       if (layout.length) {
-        helpMessage += table(layout, {
-          border: getBorderCharacters('void'),
-          columnDefault: {
-            paddingLeft: 4,
-          },
-          drawHorizontalLine: () => false,
-        })
+        helpMessage += renderTable(layout)
       }
     }
 
@@ -398,13 +392,7 @@ export class CLI {
         })
       )
 
-      helpMessage += table(layout, {
-        border: getBorderCharacters('void'),
-        columnDefault: {
-          paddingLeft: 4,
-        },
-        drawHorizontalLine: () => false,
-      })
+      helpMessage += renderTable(layout)
     }
 
     return helpMessage

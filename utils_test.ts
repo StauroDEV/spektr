@@ -120,7 +120,7 @@ describe('helpMessageForCommand', () => {
     const message = helpMessageForCommand(cli.commands[0])
 
     expect(message).toEqual(
-      `Usage: test [args]\n    --test, -t     testing            \n    --help, -h     shows this message \n`,
+      `Usage: test [args]\n    --test, -t     testing\n    --help, -h     shows this message\n`,
     )
   })
   it('outputs help message for a command with no options', () => {
@@ -131,7 +131,7 @@ describe('helpMessageForCommand', () => {
     const message = helpMessageForCommand(cli.commands[0])
 
     expect(message).toEqual(
-      'Usage: test [args]\n    --help, -h     shows this message \n',
+      'Usage: test [args]\n    --help, -h     shows this message\n',
     )
   })
   it('outputs help message for a command with no description', () => {
@@ -144,8 +144,8 @@ describe('helpMessageForCommand', () => {
     const message = helpMessageForCommand(cli.commands[0])
 
     expect(message).toEqual(
-      'Usage: test [args]\n' + '    --test, -t                        \n' +
-        '    --help, -h     shows this message \n',
+      'Usage: test [args]\n' + '    --test, -t     \n' +
+        '    --help, -h     shows this message\n',
     )
   })
   it('allows not specifying short name for an option', () => {
@@ -158,8 +158,8 @@ describe('helpMessageForCommand', () => {
     const message = helpMessageForCommand(cli.commands[0])
 
     expect(message).toEqual(
-      'Usage: test [args]\n' + '    --test                            \n' +
-        '    --help, -h     shows this message \n',
+      'Usage: test [args]\n' + '    --test         \n' +
+        '    --help, -h     shows this message\n',
     )
   })
 })
