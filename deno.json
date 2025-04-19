@@ -13,7 +13,7 @@
   },
   "name": "@stauro/spektr",
   "version": "0.1.2",
-  "exports":{
+  "exports": {
     ".": "./mod.ts",
     "./plugins/color": "./plugins/color.ts"
   }
