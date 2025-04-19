@@ -1,2 +1,2 @@
 export { getBorderCharacters, table } from 'table'
-export * as colors from '@std/fmt/colors'
+export { default as colors } from 'picocolors'

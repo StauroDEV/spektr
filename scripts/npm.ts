@@ -40,10 +40,6 @@ await build({
     },
   },
   mappings: {
-    '@std/fmt/colors': {
-      name: 'picocolors',
-      version: '^1.1.1',
-    },
     'https://deno.land/x/type_detect@v4.0.8/index.js': {
       name: 'type-detect',
       version: '^4.0.8',
