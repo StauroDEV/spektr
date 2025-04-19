@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, it } from '@std/testing/bdd'
 import { expect } from '@std/expect'
-import { assertSpyCall, Spy, spy } from '@std/testing/mock'
+import { assertSpyCall, type Spy, spy } from '@std/testing/mock'
 import { CLI } from './spektr.ts'
-import { Plugin, Positionals } from './types.ts'
-import { ParsedOptions } from './types.ts'
+import type { Plugin, Positionals } from './types.ts'
+import type { ParsedOptions } from './types.ts'
 
 describe('CLI', () => {
   it('is initialized properly', () => {

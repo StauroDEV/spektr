@@ -1,6 +1,6 @@
 import { colors, getBorderCharacters, table } from '../deps.ts'
 import type { CLI } from '../spektr.ts'
-import { Command, Plugin } from '../types.ts'
+import type { Command, Plugin } from '../types.ts'
 
 export const colorPlugin: Plugin = (cli) => {
   const helpFn = (cmd: Command) => {

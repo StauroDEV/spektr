@@ -1,5 +1,5 @@
 import { getBorderCharacters, table } from './deps.ts'
-import { CLI } from './spektr.ts'
+import type { CLI } from './spektr.ts'
 import type { Command, Option, ParsedOptions, Positionals } from './types.ts'
 
 export const hasOptions = (args: Positionals): boolean =>

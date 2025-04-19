@@ -7,7 +7,7 @@ import {
   helpMessageForCommand,
 } from './utils.ts'
 import { CLI } from './spektr.ts'
-import { Command } from './types.ts'
+import type { Command } from './types.ts'
 
 describe('hasOptions', () => {
   it('detects regular args', () => {
