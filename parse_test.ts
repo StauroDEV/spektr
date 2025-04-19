@@ -1,5 +1,5 @@
-import { describe, it } from 'https://deno.land/std@0.224.0/testing/bdd.ts'
-import { expect } from 'https://deno.land/std@0.224.0/expect/mod.ts'
+import { describe, it } from '@std/testing/bdd'
+import { expect } from '@std/expect'
 import { handleArgParsing } from './parse.ts'
 
 describe('handleArgParsing', () => {

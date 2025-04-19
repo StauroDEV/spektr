@@ -1,5 +1,5 @@
 // ex. scripts/build_npm.ts
-import { build, emptyDir } from 'https://deno.land/x/dnt@0.40.0/mod.ts'
+import { build, emptyDir } from '@deno/dnt'
 
 await emptyDir('./npm')
 
@@ -31,7 +31,7 @@ await build({
       access: 'public',
     },
     dependencies: {
-      'colorette': '^2.0.20',
+      picocolors: '^1.1.1',
       table: '^6.8.1',
     },
     devDependencies: {
@@ -42,7 +42,7 @@ await build({
   mappings: {
     'https://deno.land/std@0.224.0/fmt/colors.ts': {
       name: 'colorette',
-      version: '&2.0.20',
+      version: '^1.1.1',
     },
     'https://deno.land/x/type_detect@v4.0.8/index.js': {
       name: 'type-detect',
