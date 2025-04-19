@@ -23,7 +23,7 @@ await build({
     license: 'Apache-2.0',
     repository: {
       type: 'git',
-      url: 'https://github.com/stauroDEV/spektr.git',
+      url: 'https://github.com/StauroDEV/spektr',
     },
     bugs: {
       url: 'https://github.com/stauroDEV/spektr/issues',
